@@ -20,9 +20,17 @@ ParallelCoords = function(parentElement, data){
 	this.parentElement = parentElement;
   this.data = data;
   this.displayData = []; // see data wrangling
+	this.windGenerationFieldNames = ["state", "region", "installed_capcity_mw", "state_rank", "capacity_under_construction_mw", "projects_online", "num_turbines"]
+	this.economicFieldNames = ["state", "region", "in_state_energy_production_2014", "us_homes_powered", "facilities", "project_invest", "land_lease_total_million"]
+	this.environmentalFieldNames = ["state", "region", "water_savings_gallons", "bottles_water_saved", "co2_avoided_metric_tons", "cars_worth"]
 
   // DEBUG RAW DATA
   console.log(this.data);
+
+	// Initial filter
+	this.dropColumns(this.windGenerationFieldNames);
+
+	console.log(this.displayData);
 
   this.initVis();
 }
@@ -35,10 +43,20 @@ ParallelCoords = function(parentElement, data){
 ParallelCoords.prototype.initVis = function(){
 	var vis = this;
 
-	vis.margin = {top: 0, right: 0, bottom: 0, left: 0};
+	// Setup margins
+	vis.margin = {top: 30, right: 10, bottom: 10, left: 10};
 
-	vis.width = 500 - vis.margin.left - vis.margin.right,
+	// Vis width/height
+	vis.width = 960 - vis.margin.left - vis.margin.right,
   vis.height = 500 - vis.margin.top - vis.margin.bottom;
+
+	// Local var
+	vis.x = d3.scale.ordinal().rangePoints([0, vis.width], 1),
+	vis.y = {},
+	vis.dragging = {};
+
+	vis.line = d3.svg.line(),
+	vis.axis = d3.svg.axis().orient("left");
 
   // SVG drawing area
 	vis.svg = d3.select("#" + vis.parentElement).append("svg")
@@ -46,6 +64,109 @@ ParallelCoords.prototype.initVis = function(){
 	    .attr("height", vis.height + vis.margin.top + vis.margin.bottom)
 	  .append("g")
 	    .attr("transform", "translate(" + vis.margin.left + "," + vis.margin.top + ")");
+
+	// Extract dimensions and create scales
+	vis.x.domain(vis.dimensions = d3.keys(vis.displayData[0]).filter(function(d) {
+		return d != "state" && d != "region" && (vis.y[d] = d3.scale.linear()
+				.domain(d3.extent(vis.displayData, function(p) { return +p[d]; }))
+				.range([vis.height, 0]));
+	}));
+
+	// Add background lines
+	vis.background = vis.svg.append("g")
+		.attr("class", "background")
+	.selectAll("path")
+		.data(vis.displayData)
+	.enter().append("path")
+		.attr("d", vis.path);
+
+	// Add foreground lines
+  vis.foreground = vis.svg.append("g")
+      .attr("class", "foreground")
+    .selectAll("path")
+      .data(vis.displayData)
+    .enter().append("path")
+      .attr("d", vis.path);
+
+	// Add a group element for each dimension.
+  vis.g = vis.svg.selectAll(".dimension")
+      .data(vis.dimensions)
+    .enter().append("g")
+      .attr("class", "dimension")
+      .attr("transform", function(d) { return "translate(" + vis.x(d) + ")"; })
+      .call(d3.behavior.drag()
+        .origin(function(d) { return {x: vis.x(d)}; })
+        .on("dragstart", function(d) {
+          vis.dragging[d] = vis.x(d);
+          background.attr("visibility", "hidden");
+        })
+        .on("drag", function(d) {
+          vis.dragging[d] = Math.min(width, Math.max(0, d3.event.x));
+          vis.foreground.attr("d", vis.path);
+          vis.dimensions.sort(function(a, b) { return vis.position(a) - vis.position(b); });
+          vis.x.domain(vis.dimensions);
+          vis.g.attr("transform", function(d) { return "translate(" + vis.position(d) + ")"; })
+        })
+        .on("dragend", function(d) {
+          delete vis.dragging[d];
+          vis.transition(d3.select(this)).attr("transform", "translate(" + x(d) + ")");
+          vis.transition(vis.foreground).attr("d", vis.path);
+          vis.background
+              .attr("d", vis.path)
+            .transition()
+              .delay(500)
+              .duration(0)
+              .attr("visibility", null);
+        }));
+
+		// Add an axis and title.
+	  vis.g.append("g")
+	      .attr("class", "axis")
+	      .each(function(d) { d3.select(this).call(vis.axis.scale(vis.y[d])); })
+	    .append("text")
+	      .style("text-anchor", "middle")
+	      .attr("y", -9)
+	      .text(function(d) { return d; });
+
+	  // Add and store a brush for each axis.
+	  vis.g.append("g")
+	      .attr("class", "brush")
+	      .each(function(d) {
+	        d3.select(this).call(vis.y[d].brush = d3.svg.brush().y(vis.y[d]).on("brushstart", brushstart).on("brush", brush));
+	      })
+	    .selectAll("rect")
+	      .attr("x", -8)
+	      .attr("width", 16);
+	// });
+
+	// function position(d) {
+	//   vis.v = vis.dragging[d];
+	//   return vis.v == null ? vis.x(d) : vis.v;
+	// }
+	//
+	// function transition(g) {
+	//   return vis.g.transition().duration(500);
+	// }
+	//
+	// // Returns the path for a given data point.
+	// function path(d) {
+	//   return line(vis.dimensions.map(function(p) { return [vis.position(p), vis.y[p](d[p])]; }));
+	// }
+	//
+	// function brushstart() {
+	//   d3.event.sourceEvent.stopPropagation();
+	// }
+	//
+	// // Handles a brush event, toggling the display of foreground lines.
+	// function brush() {
+	//   vis.actives = vis.dimensions.filter(function(p) { return !vis.y[p].brush.empty(); }),
+	//       vis.extents = vis.actives.map(function(p) { return vis.y[p].brush.extent(); });
+	//   vis.foreground.style("display", function(d) {
+	//     return vis.actives.every(function(p, i) {
+	//       return vis.extents[i][0] <= d[p] && d[p] <= extents[i][1];
+	//     }) ? null : "none";
+	//   });
+	// }
 
 
 	// Scales and axes
@@ -95,4 +216,69 @@ ParallelCoords.prototype.updateVis = function() {
 
   // Call axis functions with the new domain
 
+}
+
+ParallelCoords.prototype.dropColumns = function(columnsToKeep) {
+	var vis = this;
+
+	// Set display data to full dataset
+	vis.displayData = vis.data;
+
+	// Cycle through and only keep columns with names in the columnsToKeep array
+	vis.displayData.forEach(function(row) {
+		for (var attr in row) {
+			if (row.hasOwnProperty(attr)) {
+				if (columnsToKeep.indexOf(attr) < 0) {
+					delete row[attr];
+				}
+			}
+		}
+	});
+}
+
+
+
+
+
+
+
+
+
+ParallelCoords.prototype.position = function(d) {
+	var vis = this;
+
+	vis.v = vis.dragging[d];
+	return vis.v == null ? vis.x(d) : vis.v;
+}
+
+ParallelCoords.prototype.transition = function(g) {
+	var vis = this;
+
+	return vis.g.transition().duration(500);
+}
+
+// Returns the path for a given data point.
+ParallelCoords.prototype.path = function(d) {
+	var vis = this;
+
+	return vis.line(vis.dimensions.map(function(p) { return [vis.position(p), vis.y[p](d[p])]; }));
+}
+
+ParallelCoords.prototype.brushstart = function() {
+	var vis = this;
+
+	d3.event.sourceEvent.stopPropagation();
+}
+
+// Handles a brush event, toggling the display of foreground lines.
+ParallelCoords.prototype.brush = function() {
+	var vis = this;
+
+	vis.actives = vis.dimensions.filter(function(p) { return !vis.y[p].brush.empty(); }),
+			vis.extents = vis.actives.map(function(p) { return vis.y[p].brush.extent(); });
+	vis.foreground.style("display", function(d) {
+		return vis.actives.every(function(p, i) {
+			return vis.extents[i][0] <= d[p] && d[p] <= extents[i][1];
+		}) ? null : "none";
+	});
 }
