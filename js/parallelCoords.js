@@ -247,8 +247,8 @@ ParallelCoords.prototype.dropColumns = function(columnsToKeep) {
 ParallelCoords.prototype.position = function(d) {
 	var vis = this;
 
-	vis.v = vis.dragging[d];
-	return vis.v == null ? vis.x(d) : vis.v;
+	var v = vis.dragging[d];
+	return v == null ? vis.x(d) : v;
 }
 
 ParallelCoords.prototype.transition = function(g) {
