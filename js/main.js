@@ -35,7 +35,22 @@ function loadData() {
 	  .defer(d3.json, "data/us.json")
 	  .await(function(error, windData, usData){
 			if(!error) {
+				// Convert to num
 				parallelCoordsData = windData;
+				parallelCoordsData.forEach(function(row) {
+					for (var key in row) {
+						if (row.hasOwnProperty(key)) {
+							if (!(isNaN(row[key]))) { // if is a number
+								row[key] = +row[key];
+								// Remove null values
+								if (row[key] == 9999) {
+									row[key] = 0;
+								}
+							}
+						}
+					}
+				});
+
 				usGeometry = usData;
 
 				createVis();
@@ -48,5 +63,6 @@ function createVis() {
 	// Instantiate visualization objects here
 	// choroplethMap = new ChoroplethMap("choropleth-map", choroplethMapData);
 	parallelCoords = new ParallelCoords("parallel-coords", parallelCoordsData);
+	// parallelCoords = new ParallelCoord("parallel-coords", parallelCoordsData);
 
 }
