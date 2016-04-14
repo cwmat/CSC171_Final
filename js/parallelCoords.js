@@ -74,7 +74,7 @@ ParallelCoords.prototype.initVis = function(){
 				.range([vis.height, 0]));
 	}));
 
-	console.log(vis.dimensions);
+	console.log(vis.y);
 
 	vis.tip = d3.tip()
 							.attr('class', 'd3-tip')
@@ -169,7 +169,7 @@ ParallelCoords.prototype.initVis = function(){
 
 	// Returns the path for a given data point.
 	function path(d) {
-		console.log(vis.dimensions);
+		// console.log(vis.dimensions);
 	  return line(vis.dimensions.map(function(p) { return [position(p), vis.y[p](d[p])]; }));
 	}
 
@@ -179,28 +179,30 @@ ParallelCoords.prototype.initVis = function(){
 
 	// Handles a brush event, toggling the display of foreground lines.
 	function brush() {
-	  vis.actives = vis.dimensions.filter(function(p) { return !vis.y[p].brush.empty(); }),
+	  vis.actives = vis.dimensions.filter(function(p) {
+			// console.log(vis.y["installed_capacity_mw"](7000));
+			return !vis.y[p].brush.empty(); }),
 	      vis.extents = vis.actives.map(function(p) { return vis.y[p].brush.extent(); });
 	  vis.foreground.style("display", function(d) {
 	    return vis.actives.every(function(p, i) {
-	      return vis.extents[i][0] <= d[p] && d[p] <= extents[i][1];
+	      return vis.extents[i][0] <= d[p] && d[p] <= vis.extents[i][1];
 	    }) ? null : "none";
 	  });
 	}
 
 
 	// Scales and axes
-  vis.x = d3.time.scale()
-	  	.range([0, vis.width])
-	  	.domain(d3.extent(vis.displayData, function(d) { return d.Year; }));
-
-	vis.y = d3.scale.linear()
-			.range([vis.height, 0])
-			.domain([0, d3.max(vis.displayData, function(d) { return d.Expenditures; })]);
-
-	vis.xAxis = d3.svg.axis()
-		  .scale(vis.x)
-		  .orient("bottom");
+  // vis.x = d3.time.scale()
+	//   	.range([0, vis.width])
+	//   	.domain(d3.extent(vis.displayData, function(d) { return d.Year; }));
+	//
+	// vis.y = d3.scale.linear()
+	// 		.range([vis.height, 0])
+	// 		.domain([0, d3.max(vis.displayData, function(d) { return d.Expenditures; })]);
+	//
+	// vis.xAxis = d3.svg.axis()
+	// 	  .scale(vis.x)
+	// 	  .orient("bottom");
 
 
 	// SVG area path generator

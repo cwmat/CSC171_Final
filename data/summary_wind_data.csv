@@ -1,4 +1,4 @@
-state,region,installed_capcity_mw,state_rank,capacity_under_construction_mw,projects_online,num_turbines,in_state_energy_production_2014,us_homes_powered,wind_jobs_2014,facilities,project_invest,land_lease_total_million,water_savings_gallons,bottles_water_saved,co2_avoided_metric_tons,cars_worth
+state,region,installed_capacity_mw,state_rank,capacity_under_construction_mw,projects_online,num_turbines,in_state_energy_production_2014,us_homes_powered,wind_jobs_2014,facilities,project_invest,land_lease_total_million,water_savings_gallons,bottles_water_saved,co2_avoided_metric_tons,cars_worth
 washington,west,3075,9,0,20,1725,0.063,666000,3000,9,5800000000,9200000,1200000000,8900000000,2400000,519000
 oregon,west,3153,8,50,26,1837,0.1269,695000,2000,10,6200000000,9500000,758400000,5700000000,1400000,307000
 california,west,6108,3,0,124,11990,0.0697,1300000,3000,15,11700000000,17800000,3400000000,25600000000,7800000,1700000
