@@ -71,6 +71,27 @@ svg {
 .foreground path {
   fill: none;
   stroke: steelblue;
+  stroke-width: 3px;
+}
+
+.foreground path.west {
+  stroke: rgb(177, 48, 255);
+}
+
+.foreground path.southwest {
+  stroke: yellow;
+}
+
+.foreground path.midwest {
+  stroke: rgb(89, 231, 250);
+}
+
+.foreground path.southeast {
+  stroke: rgb(26, 244, 41);
+}
+
+.foreground path.northeast {
+  stroke: rgb(250, 60, 60);
 }
 
 .brush .extent {

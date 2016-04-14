@@ -102,6 +102,7 @@ ParallelCoords.prototype.initVis = function(){
       .data(vis.displayData)
     .enter().append("path")
       .attr("d", path)
+			.attr("class", function(d) { return d.region; })
 			.on("mouseenter", vis.tip.show)
 			.on("mouseleave", vis.tip.hide)
 			;
