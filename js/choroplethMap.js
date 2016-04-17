@@ -17,27 +17,37 @@
   *
   */
 ChoroplethMap = function(parentElement, data, mapData){
+	var vis = this;
+
 	this.parentElement = parentElement;
 	this.mapData = mapData;
   this.data = data;
   this.displayData = []; // see data wrangling
-	this.removeStates = ["PR", "HI", "AK"];
+	this.dataExtent = [];
+	this.year = 1995;
+	// this.removeStates = ["PR", "HI", "AK"];
 
   // DEBUG RAW DATA
   // console.log(this.data);
 
 	// Initial sort
-	this.displayData = this.data.filter(function(d) {
-		if (d.on_year == 2014) {
-			return d;
-		}
-	});
+	// this.displayData = this.data.filter(function(d) {
+	// 	if (d.on_year == 2014) {
+	// 		return d;
+	// 	}
+	// });
 
-	this.buildDataMap();
+	this.aggregateOnYear(this.year);
+
+	// this.buildDataMap();
 
 	// console.log(this.displayData);
-	console.log(this.dataMap);
+	// console.log(this.dataMap);
+	// console.log(this.dataMap.CA);
 
+	// setTimeout(function() {
+	// 	vis.initVis();
+	// }, 10000);
   this.initVis();
 }
 
@@ -73,8 +83,10 @@ ChoroplethMap.prototype.initVis = function(){
 				.projection(vis.proj);
 
 	// Update domain
-  vis.quantize.domain(d3.extent(vis.displayData, function(d) { return d.SUM_MW_turbine }))
-          .range(d3.range(9).map(function(i) { return "q" + i + "-9"; }));
+  // vis.quantize.domain(d3.extent(vis.dataExtent, function(d) { return d.capacity }))
+  //         .range(d3.range(9).map(function(i) { return "q" + i + "-9"; }));
+	vis.quantize.domain([0, d3.max(vis.dataExtent, function(d) { return d.capacity; })])
+					.range(d3.range(9).map(function(i) { return "q" + i + "-9"; }));
 
 	// Draw us boundaries
 	vis.svg.selectAll("path")
@@ -84,6 +96,10 @@ ChoroplethMap.prototype.initVis = function(){
 					// If the state code exists in the topojson and in the data map
 					if (d.properties.postal && vis.dataMap[d.properties.postal]) {
 						var key = d.properties.postal;
+						console.log(key);
+						console.log(vis.dataMap[key]);
+						console.log(vis.dataMap[key].capacity);
+						console.log(vis.quantize(vis.dataMap[key].capacity));
 						return " state " + vis.quantize(vis.dataMap[key].capacity);
 					} else {
 						return "state q0-9";
@@ -131,22 +147,60 @@ ChoroplethMap.prototype.updateVis = function() {
 ChoroplethMap.prototype.aggregateOnYear = function(year) {
   var vis = this;
 
-  vis.dataMap = {};
+	vis.dataExtent = [];
+	vis.dataMap = {};
 
-	vis.displayData.forEach(function(row) {
-		if(row) {
-			// Check that the state is not in the removed list
-			if (vis.removeStates.indexOf(row.state) < 0) {
-				vis.dataMap[row.state] = {
-					year: row.on_year,
-					capacity: row.SUM_MW_turbine,
-					turbines: row.COUNT_unique_id,
-					height: row.MEAN_tower_h,
-					blade: row.MEAN_blade_l,
-					rotor: row.MEAN_rotor_s_a
-				}
-			}
+	var tempData = vis.data.filter(function(d) {
+		if (d.on_year <= year) {
+			return d;
 		}
+	});
+
+	// console.log(tempData);
+
+	// Create a set for unique state names from the fitlered dataset
+	var stateSet = new Set();
+	tempData.forEach(function(d) {
+		stateSet.add(d.state);
+	});
+
+	// console.log(stateSet);
+
+	// Cycle through each state and for each state aggregate stats
+	stateSet.forEach(function(d) {
+		var state = d;
+		var aggCapacity = 0,
+				aggTurbines = 0,
+				aggHeight = 0,
+				aggBlade = 0,
+				aggRotor = 0
+				count = 0;
+
+		// console.log(d);
+		tempData.forEach(function(d) {
+			if (d.state == state) {
+				aggCapacity = aggCapacity + d.SUM_MW_turbine;
+				aggTurbines = aggTurbines + d.COUNT_unique_id;
+				aggHeight = aggHeight + d.MEAN_tower_h;
+				aggBlade = aggBlade + d.MEAN_blade_l;
+				aggRotor = aggRotor + d.MEAN_rotor_s_a;
+				count++;
+			}
+		});
+
+		// Write to data map
+		vis.dataMap[state] = {
+			// year: row.on_year,
+			capacity: aggCapacity,
+			turbines: aggTurbines,
+			height: aggHeight / count,
+			blade: aggBlade / count,
+			rotor: aggRotor / count,
+		};
+
+		// Push to data extent
+		vis.dataExtent.push({capacity: aggCapacity});
+
 	});
 
 }
