@@ -26,6 +26,7 @@ https://commons.wikimedia.org/wiki/Main_Page
 
   <link rel="stylesheet" href="css/bootstrap.min.css">
   <link rel="stylesheet" href="css/font-awesome.min.css">
+  <link rel="stylesheet" href="css/d3.slider.css">
   <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
@@ -68,7 +69,10 @@ https://commons.wikimedia.org/wiki/Main_Page
 		<!-- Map -->
 		<div class="row">
       <div class="col-lg-12">
-        <div id="choropleth-map"></div>
+        <div id="choropleth-map" class="vis"></div>
+      </div>
+      <div class="col-lg-12">
+        <div id="time-slider"></div>
       </div>
     </div>
     <!-- /.row -->
@@ -76,7 +80,7 @@ https://commons.wikimedia.org/wiki/Main_Page
 		<!-- Parallel Coordinates -->
 		<div class="row">
       <div class="col-lg-12">
-        <div id="parallel-coords"></div>
+        <div id="parallel-coords" class="vis"></div>
       </div>
     </div>
     <!-- /.row -->
@@ -103,6 +107,7 @@ https://commons.wikimedia.org/wiki/Main_Page
   <script src="js/topojson.js"></script>
   <script src="js/d3.min.js"></script>
   <script src="js/d3.tip.js"></script>
+  <script src="js/d3.slider.js"></script>
 
   <!-- Choropleth and second visualization -->
   <script src="js/parallelCoords.js"></script>

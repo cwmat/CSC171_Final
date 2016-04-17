@@ -56,7 +56,9 @@ h2 {
 
 
 
-
+.vis {
+  margin-top: 100px;
+}
 
 svg {
   font: 10px sans-serif;

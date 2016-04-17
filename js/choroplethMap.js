@@ -96,16 +96,35 @@ ChoroplethMap.prototype.initVis = function(){
 					// If the state code exists in the topojson and in the data map
 					if (d.properties.postal && vis.dataMap[d.properties.postal]) {
 						var key = d.properties.postal;
-						console.log(key);
-						console.log(vis.dataMap[key]);
-						console.log(vis.dataMap[key].capacity);
-						console.log(vis.quantize(vis.dataMap[key].capacity));
+						// console.log(key);
+						// console.log(vis.dataMap[key]);
+						// console.log(vis.dataMap[key].capacity);
+						// console.log(vis.quantize(vis.dataMap[key].capacity));
 						return " state " + vis.quantize(vis.dataMap[key].capacity);
 					} else {
 						return "state q0-9";
 					}
 				})
-				.attr("d", vis.path)
+				.attr("d", vis.path);
+
+
+	// Time slider
+	// vis.timeSlider = d3.select("#time-slider").append("svg")
+	//     .attr("width", vis.width + vis.margin.left + vis.margin.right)
+	//     .attr("height", vis.height + vis.margin.top + vis.margin.bottom)
+	//   .append("g")
+	//     .attr("transform", "translate(" + vis.margin.left + "," + vis.margin.top + ")");
+
+	vis.slider = d3.slider().axis(true).min(1981).max(2014).step(1);
+	vis.test = d3.select("#time-slider").call(vis.slider);
+
+	// console.log(vis.slider.value());
+	// vis.slider.on("drag", function() {
+	// 	console.log(vis.slider.value());
+	// })
+
+
+
 
   // TODO: (Filter, aggregate, modify data)
   vis.wrangleData();
@@ -119,6 +138,7 @@ ChoroplethMap.prototype.wrangleData = function() {
   var vis = this;
 
   // Wrangle
+	vis.aggregateOnYear(vis.year);
 
   // Update the visualization
   vis.updateVis();
@@ -132,6 +152,28 @@ ChoroplethMap.prototype.updateVis = function() {
   var vis = this;
 
   // Update domain
+	vis.quantize.domain([0, d3.max(vis.dataExtent, function(d) { return d.capacity; })])
+					.range(d3.range(9).map(function(i) { return "q" + i + "-9"; }));
+
+	// Update us boundaries
+	vis.svg.selectAll(".state")
+				.attr("class", function(d) {
+					// If the state code exists in the topojson and in the data map
+					if (d.properties.postal && vis.dataMap[d.properties.postal]) {
+						var key = d.properties.postal;
+						// console.log(key);
+						// console.log(vis.dataMap[key]);
+						// console.log(vis.dataMap[key].capacity);
+						// console.log(vis.quantize(vis.dataMap[key].capacity));
+						return " state " + vis.quantize(vis.dataMap[key].capacity);
+					} else {
+						return "state q0-9";
+					}
+				});
+				// .attr("d", vis.path)
+
+
+
 
   // Get the maximum of the multi-dimensional array or in other words, get the highest peak of the uppermost layer
 
@@ -229,5 +271,22 @@ ChoroplethMap.prototype.buildDataMap = function() {
 			}
 		}
 	});
+
+}
+
+
+/**
+  * Make data map
+  *
+  */
+ChoroplethMap.prototype.slide = function(year) {
+  var vis = this;
+
+	vis.year = year;
+  console.log(year);
+
+	setTimeout(function() {
+		vis.wrangleData();
+	}, 1000);
 
 }
