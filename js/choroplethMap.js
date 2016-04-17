@@ -16,13 +16,14 @@
   *     -- the input dataset
   *
   */
-ChoroplethMap = function(parentElement, data){
+ChoroplethMap = function(parentElement, data, mapData){
 	this.parentElement = parentElement;
+	this.mapData = mapData;
   this.data = data;
   this.displayData = []; // see data wrangling
 
   // DEBUG RAW DATA
-  console.log(this.data);
+  // console.log(this.data);
 
   this.initVis();
 }
@@ -37,8 +38,8 @@ ChoroplethMap.prototype.initVis = function(){
 
 	vis.margin = {top: 0, right: 0, bottom: 0, left: 0};
 
-	vis.width = 500 - vis.margin.left - vis.margin.right,
-  vis.height = 500 - vis.margin.top - vis.margin.bottom;
+	vis.width = 960 - vis.margin.left - vis.margin.right,
+  vis.height = 600 - vis.margin.top - vis.margin.bottom;
 
   // SVG drawing area
 	vis.svg = d3.select("#" + vis.parentElement).append("svg")
@@ -46,6 +47,20 @@ ChoroplethMap.prototype.initVis = function(){
 	    .attr("height", vis.height + vis.margin.top + vis.margin.bottom)
 	  .append("g")
 	    .attr("transform", "translate(" + vis.margin.left + "," + vis.margin.top + ")");
+
+	// Map projection and path generator
+	vis.proj = d3.geo.albersUsa()
+				.scale(1280)
+				.translate([vis.width / 2, vis.height / 2]);
+
+	vis.path = d3.geo.path()
+				.projection(vis.proj);
+
+	// Draw us boundaries
+	vis.svg.selectAll("path")
+				.data(vis.mapData)
+			.enter().append("path")
+				.attr("d", vis.path)
 
 
 	// Scales and axes

@@ -9,6 +9,7 @@
 
 // Global variables for cleaned datasets
 var choroplethMapData = [],
+		usGeometry = [],
 		parallelCoordsData = [];
 
 // Date parser to convert strings to date objects
@@ -32,9 +33,13 @@ loadData();
 function loadData() {
 	queue()
 	  .defer(d3.csv, "data/summary_wind_data.csv")
-	  .defer(d3.json, "data/us.json")
+	  .defer(d3.json, "data/us.topojson")
 	  .await(function(error, windData, usData){
 			if(!error) {
+				/**
+				  * ParallelCoords Data
+				  *
+				  */
 				// Convert to num
 				parallelCoordsData = windData;
 				parallelCoordsData.forEach(function(row) {
@@ -51,7 +56,18 @@ function loadData() {
 					}
 				});
 
-				usGeometry = usData;
+				/**
+				  * US boundaries data
+				  *
+				  */
+				// Unpack topoJSON to geoJson
+	      var usGeoJson = topojson.feature(usData, usData.objects.data).features;
+
+
+				// usGeometry = usData.features;
+				usGeometry = usGeoJson;
+
+				console.log(usGeometry);
 
 				createVis();
 			}
@@ -61,7 +77,7 @@ function loadData() {
 function createVis() {
 
 	// Instantiate visualization objects here
-	// choroplethMap = new ChoroplethMap("choropleth-map", choroplethMapData);
+	choroplethMap = new ChoroplethMap("choropleth-map", choroplethMapData, usGeometry);
 	parallelCoords = new ParallelCoords("parallel-coords", parallelCoordsData);
 	// parallelCoords = new ParallelCoord("parallel-coords", parallelCoordsData);
 
