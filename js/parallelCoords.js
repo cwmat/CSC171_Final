@@ -26,13 +26,13 @@ ParallelCoords = function(parentElement, data){
 	this.drop = ["state_rank", "cars_worth", "bottles_water_saved", "us_homes_powered"]
 
   // DEBUG RAW DATA
-  console.log(this.data);
+  // console.log(this.data);
 
 	// Initial filter
 	this.dropColumns(this.drop);
 	// this.displayData = this.data;
 
-	console.log(this.displayData);
+	// console.log(this.displayData);
 
   this.initVis();
 }
@@ -74,7 +74,7 @@ ParallelCoords.prototype.initVis = function(){
 				.range([vis.height, 0]));
 	}));
 
-	console.log(vis.y);
+	// console.log(vis.y);
 
 	vis.tip = d3.tip()
 							.attr('class', 'd3-tip')

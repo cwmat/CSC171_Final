@@ -21,9 +21,22 @@ ChoroplethMap = function(parentElement, data, mapData){
 	this.mapData = mapData;
   this.data = data;
   this.displayData = []; // see data wrangling
+	this.removeStates = ["PR", "HI", "AK"];
 
   // DEBUG RAW DATA
   // console.log(this.data);
+
+	// Initial sort
+	this.displayData = this.data.filter(function(d) {
+		if (d.on_year == 2014) {
+			return d;
+		}
+	});
+
+	this.buildDataMap();
+
+	// console.log(this.displayData);
+	console.log(this.dataMap);
 
   this.initVis();
 }
@@ -48,6 +61,9 @@ ChoroplethMap.prototype.initVis = function(){
 	  .append("g")
 	    .attr("transform", "translate(" + vis.margin.left + "," + vis.margin.top + ")");
 
+	// Create quantize color scale
+	vis.quantize = d3.scale.quantize();
+
 	// Map projection and path generator
 	vis.proj = d3.geo.albersUsa()
 				.scale(1280)
@@ -56,30 +72,26 @@ ChoroplethMap.prototype.initVis = function(){
 	vis.path = d3.geo.path()
 				.projection(vis.proj);
 
+	// Update domain
+  vis.quantize.domain(d3.extent(vis.displayData, function(d) { return d.SUM_MW_turbine }))
+          .range(d3.range(9).map(function(i) { return "q" + i + "-9"; }));
+
 	// Draw us boundaries
 	vis.svg.selectAll("path")
 				.data(vis.mapData)
 			.enter().append("path")
+				.attr("class", function(d) {
+					// If the state code exists in the topojson and in the data map
+					if (d.properties.postal && vis.dataMap[d.properties.postal]) {
+						var key = d.properties.postal;
+						return " state " + vis.quantize(vis.dataMap[key].capacity);
+					} else {
+						return "state q0-9";
+					}
+				})
 				.attr("d", vis.path)
 
-
-	// Scales and axes
-  // vis.x = d3.time.scale()
-	//   	.range([0, vis.width])
-	//   	.domain(d3.extent(vis.displayData, function(d) { return d.Year; }));
-  //
-	// vis.y = d3.scale.linear()
-	// 		.range([vis.height, 0])
-	// 		.domain([0, d3.max(vis.displayData, function(d) { return d.Expenditures; })]);
-  //
-	// vis.xAxis = d3.svg.axis()
-	// 	  .scale(vis.x)
-	// 	  .orient("bottom");
-
-
-	// SVG area path generator
-
-  // TO-DO: (Filter, aggregate, modify data)
+  // TODO: (Filter, aggregate, modify data)
   vis.wrangleData();
 }
 
@@ -109,5 +121,59 @@ ChoroplethMap.prototype.updateVis = function() {
 
 
   // Call axis functions with the new domain
+
+}
+
+/**
+  * Aggregate data
+  *
+  */
+ChoroplethMap.prototype.aggregateOnYear = function(year) {
+  var vis = this;
+
+  vis.dataMap = {};
+
+	vis.displayData.forEach(function(row) {
+		if(row) {
+			// Check that the state is not in the removed list
+			if (vis.removeStates.indexOf(row.state) < 0) {
+				vis.dataMap[row.state] = {
+					year: row.on_year,
+					capacity: row.SUM_MW_turbine,
+					turbines: row.COUNT_unique_id,
+					height: row.MEAN_tower_h,
+					blade: row.MEAN_blade_l,
+					rotor: row.MEAN_rotor_s_a
+				}
+			}
+		}
+	});
+
+}
+
+/**
+  * Make data map
+  *
+  */
+ChoroplethMap.prototype.buildDataMap = function() {
+  var vis = this;
+
+  vis.dataMap = {};
+
+	vis.displayData.forEach(function(row) {
+		if(row) {
+			// Check that the state is not in the removed list
+			if (vis.removeStates.indexOf(row.state) < 0) {
+				vis.dataMap[row.state] = {
+					year: row.on_year,
+					capacity: row.SUM_MW_turbine,
+					turbines: row.COUNT_unique_id,
+					height: row.MEAN_tower_h,
+					blade: row.MEAN_blade_l,
+					rotor: row.MEAN_rotor_s_a
+				}
+			}
+		}
+	});
 
 }
