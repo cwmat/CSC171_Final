@@ -24,7 +24,7 @@ VerticalHeatmap.prototype.initVis = function() {
     };
 
     vis.width = 800 - vis.margin.left - vis.margin.right;
-    vis.height = 1000 - vis.margin.top - vis.margin.bottom;
+    vis.height = 1100 - vis.margin.top - vis.margin.bottom;
 
     vis.svg = d3.select('#' + vis.parentElement)
         .append('svg')
@@ -47,6 +47,7 @@ VerticalHeatmap.prototype.initVis = function() {
     vis.color = d3.scale.quantize().range(vis.palette);
 
     vis.stateLabels = vis.svg.selectAll('.state-label');
+    vis.columnLabels = vis.svg.selectAll('.column-label');
 
     vis.updateVis();
 }
@@ -101,12 +102,27 @@ VerticalHeatmap.prototype.updateVis = function() {
             class: 'state-label',
             x: 0,
             y: function(d, i) {
-                return vis.margin.top + (i * 20);
+                return vis.margin.top + (i * 20) + 5;
             }
         })
         .text(function(d) {
             return mapState(d.state);
         });
+
+    vis.columnLabels.data(vis.columns)
+        .enter().append('text')
+        .attr({
+            x: function(d) {
+                var parts = d.split('_');
+                var year = formatYear.parse(parts[2]);
+                return vis.x(year);
+            },
+            y: vis.margin.top / 2,
+            'text-anchor': 'middle'
+        }).text(function(d) {
+        var parts = d.split('_');
+        return parts[2];
+    });
 
 }
 

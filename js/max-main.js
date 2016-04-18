@@ -26,7 +26,7 @@ d3.json('data/caiso_data.json', function(error, data) {
     });
 
 
-    //createCaiso(data);
+    createCaiso(data);
 });
 
 d3.csv('data/projected_capacity.csv', function(error, data) {
