@@ -16,7 +16,7 @@
   *     -- the input dataset
   *
   */
-ParallelCoords = function(parentElement, data){
+ParallelCoords = function(parentElement, data, regionalMap, regionalBars){
 	this.parentElement = parentElement;
   this.data = data;
   this.displayData = this.data; // see data wrangling
@@ -24,6 +24,8 @@ ParallelCoords = function(parentElement, data){
 	this.economicFieldNames = ["state", "region", "in_state_energy_production_2014", "us_homes_powered", "facilities", "project_invest", "land_lease_total_million"]
 	this.environmentalFieldNames = ["state", "region", "water_savings_gallons", "bottles_water_saved", "co2_avoided_metric_tons", "cars_worth"]
 	this.drop = ["state_rank", "cars_worth", "bottles_water_saved", "us_homes_powered"]
+	this.regionalMap = regionalMap;
+	this.regionalBars = regionalBars;
 
   // DEBUG RAW DATA
   // console.log(this.data);
@@ -46,10 +48,11 @@ ParallelCoords.prototype.initVis = function(){
 	var vis = this;
 
 	// Setup margins
-	vis.margin = {top: 30, right: 10, bottom: 10, left: 10};
+	vis.margin = {top: 30, right: 10, bottom: 10, left: 100};
 
 	// Vis width/height
-	vis.width = 1200 - vis.margin.left - vis.margin.right,
+	//vis.width = 1200 - vis.margin.left - vis.margin.right,
+	vis.width = 945 - vis.margin.left - vis.margin.right,
   vis.height = 500 - vis.margin.top - vis.margin.bottom;
 
 	// Local var
@@ -103,8 +106,11 @@ ParallelCoords.prototype.initVis = function(){
     .enter().append("path")
       .attr("d", path)
 			.attr("class", function(d) { return d.region; })
-			.on("mouseenter", vis.tip.show)
-			.on("mouseleave", vis.tip.hide)
+			// .on("mouseenter", vis.tip.show)
+			// .on("mouseleave", vis.tip.hide)
+			// .on("mouseenter", function(d) { vis.updateRegionalMap(d.state); })
+			// .on("mouseleave", vis.clearRegionalMap())
+			.on("mouseenter", function(d) { vis.populateTable(d); })
 			;
 
 	// Add a group element for each dimension.
@@ -180,7 +186,6 @@ ParallelCoords.prototype.initVis = function(){
 	// Handles a brush event, toggling the display of foreground lines.
 	function brush() {
 	  vis.actives = vis.dimensions.filter(function(p) {
-			// console.log(vis.y["installed_capacity_mw"](7000));
 			return !vis.y[p].brush.empty(); }),
 	      vis.extents = vis.actives.map(function(p) { return vis.y[p].brush.extent(); });
 	  vis.foreground.style("display", function(d) {
@@ -256,6 +261,38 @@ ParallelCoords.prototype.dropColumns = function(columnsToDrop) {
 			}
 		}
 	});
+}
+
+ParallelCoords.prototype.updateRegionalMap = function(state) {
+	var vis = this;
+
+	var stateKey = state.toLowerCase();
+
+	vis.regionalMap.highlightState(stateKey);
+
+
+}
+
+ParallelCoords.prototype.clearRegionalMap = function() {
+	var vis = this;
+	vis.regionalMap.highlightState("all");
+}
+
+ParallelCoords.prototype.populateTable = function(data) {
+	var vis = this;
+
+	$("#coords-table-state").html(data.state);
+	$("#coords-table-capacity").html(data.installed_capacity_mw);
+	$("#coords-table-construction").html(data.capacity_under_construction_mw);
+	$("#coords-table-projects").html(data.projects_online);
+	$("#coords-table-turbines").html(data.num_turbines);
+	$("#coords-table-percent").html(data.in_state_energy_production_2014);
+	$("#coords-table-jobs").html(data.wind_jobs_2014);
+	$("#coords-table-facilities").html(data.facilities);
+	$("#coords-table-investment").html(data.project_invest);
+	$("#coords-table-lease").html(data.land_lease_total_million);
+	$("#coords-table-water").html(data.water_savings_gallons);
+	$("#coords-table-co2").html(data.co2_avoided_metric_tons);
 }
 
 

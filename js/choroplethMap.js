@@ -24,7 +24,7 @@ ChoroplethMap = function(parentElement, data, mapData){
   this.data = data;
   this.displayData = []; // see data wrangling
 	this.dataExtent = [];
-	this.year = 1995;
+	this.year = 2014;
 	// this.removeStates = ["PR", "HI", "AK"];
 
   // DEBUG RAW DATA
@@ -105,7 +105,9 @@ ChoroplethMap.prototype.initVis = function(){
 						return "state q0-9";
 					}
 				})
-				.attr("d", vis.path);
+				.attr("d", vis.path)
+				.on("mouseenter", function(d) {	vis.populateTable(d); })
+				;
 
 
 	// Time slider
@@ -288,5 +290,30 @@ ChoroplethMap.prototype.slide = function(year) {
 	setTimeout(function() {
 		vis.wrangleData();
 	}, 1000);
+
+}
+
+/**
+  * Hover on state
+  *
+  */
+ChoroplethMap.prototype.populateTable = function(data) {
+	var vis = this;
+
+	console.log(data);
+	console.log(vis.dataMap);
+
+	if (data.properties.postal && vis.dataMap[data.properties.postal]) {
+
+		var key = data.properties.postal;
+
+		$("#map-table-state").html(data.properties.name);
+		$("#map-table-year").html(vis.year);
+		$("#map-table-capacity").html(vis.dataMap[key].capacity);
+		$("#map-table-turbines").html(vis.dataMap[key].turbines);
+		$("#map-table-height").html(vis.dataMap[key].height);
+		$("#map-table-blade").html(vis.dataMap[key].blade);
+		$("#map-table-rotor").html(vis.dataMap[key].rotor);
+	}
 
 }

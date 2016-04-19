@@ -20,7 +20,9 @@ var colorScale = d3.scale.category20();
 
 // Variables for the visualization instances add more as we create new vis
 var choroplethMap,
-		parallelCoords;
+		parallelCoords,
+		regionalMap,
+		regionalBars;
 
 
 // Start application by loading the data
@@ -97,6 +99,7 @@ function createVis() {
 
 	// Instantiate visualization objects here
 	choroplethMap = new ChoroplethMap("choropleth-map", choroplethMapData, usGeometry);
-	parallelCoords = new ParallelCoords("parallel-coords", parallelCoordsData);
-
+	regionalMap = new RegionalMap("regional-map", parallelCoordsData, usGeometry);
+	regionalBars = new RegionalBars("regional-bars", parallelCoordsData);
+	parallelCoords = new ParallelCoords("parallel-coords", parallelCoordsData, regionalMap, regionalBars);
 }

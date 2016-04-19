@@ -96,6 +96,31 @@ svg {
   stroke: rgb(250, 60, 60);
 }
 
+.region-west {
+  fill: rgb(177, 48, 255);
+}
+
+.region-southwest {
+  fill: yellow;
+}
+
+.region-midwest {
+  fill: rgb(89, 231, 250);
+}
+
+.region-southeast {
+  fill: rgb(26, 244, 41);
+}
+
+.region-northeast {
+ fill: rgb(250, 60, 60);
+}
+
+.grey-state {
+  fill: rgb(177, 177, 177);
+  stroke: rgb(139, 139, 139);
+}
+
 .brush .extent {
   fill-opacity: .3;
   stroke: #fff;
@@ -136,4 +161,8 @@ svg {
     stroke: #1C9A3D;
     stroke-width: 1.5px;
     opacity: 0.05;
+}
+
+th {
+  font-size: 0.75em;
 }

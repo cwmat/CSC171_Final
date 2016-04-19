@@ -68,8 +68,37 @@ https://commons.wikimedia.org/wiki/Main_Page
 
 		<!-- Map -->
 		<div class="row">
-      <div class="col-lg-12">
+      <div class="col-lg-10">
         <div id="choropleth-map" class="vis"></div>
+      </div>
+      <div class="col-lg-2">
+        <h2 id="map-table-state">State</h2>
+        <table class="table table-hover">
+          <tr>
+            <th>Year</th>
+            <td id="map-table-year">{TEMP}</td>
+          </tr>
+          <tr>
+            <th>Total Capacity (MW)</th>
+            <td id="map-table-capacity">{TEMP}</td>
+          </tr>
+          <tr>
+            <th>Total Number of Turbines</th>
+            <td id="map-table-turbines">{TEMP}</td>
+          </tr>
+          <tr>
+            <th>Mean Height of Turbines (m)</th>
+            <td id="map-table-height">{TEMP}</td>
+          </tr>
+          <tr>
+            <th>Mean Blade Length (m)</th>
+            <td id="map-table-blade">{TEMP}</td>
+          </tr>
+          <tr>
+            <th>Mean Rotor Sweep Area</th>
+            <td id="map-table-rotor">{TEMP}</td>
+          </tr>
+        </table>
       </div>
       <div class="col-lg-12">
         <div id="time-slider"></div>
@@ -79,8 +108,61 @@ https://commons.wikimedia.org/wiki/Main_Page
 
 		<!-- Parallel Coordinates -->
 		<div class="row">
-      <div class="col-lg-12">
+      <div class="col-lg-1">
+        <h2 id="coords-table-state">State</h2>
+        <table class="table table-hover">
+          <tr>
+            <th>Installed Wind Capacity (MW)</th>
+            <td id="coords-table-capacity">{TEMP}</td>
+          </tr>
+          <tr>
+            <th>Capacity Under Construction</th>
+            <td id="coords-table-construction">{TEMP}</td>
+          </tr>
+          <tr>
+            <th>Wind Projects Online</th>
+            <td id="coords-table-projects">{TEMP}</td>
+          </tr>
+          <tr>
+            <th>Number of Turbines</th>
+            <td id="coords-table-turbines">{TEMP}</td>
+          </tr>
+          <tr>
+            <th>2014% of In-State Energy from Wind</th>
+            <td id="coords-table-percent">{TEMP}</td>
+          </tr>
+          <tr>
+            <th>Wind Industry Jobs</th>
+            <td id="coords-table-jobs">{TEMP}</td>
+          </tr>
+          <tr>
+            <th>Wind Manufacturing Facilities</th>
+            <td id="coords-table-facilities">{TEMP}</td>
+          </tr>
+          <tr>
+            <th>Total Project Investment</th>
+            <td id="coords-table-investment">{TEMP}</td>
+          </tr>
+          <tr>
+            <th>Annual Land Lease Payments</th>
+            <td id="coords-table-lease">{TEMP}</td>
+          </tr>
+          <tr>
+            <th>Annual Water Savings (gallons)</th>
+            <td id="coords-table-water">{TEMP}</td>
+          </tr>
+          <tr>
+            <th>CO2 Emissions Avoided (metric tons)</th>
+            <td id="coords-table-co2">{TEMP}</td>
+          </tr>
+        </table>
+      </div>
+      <div class="col-lg-10">
         <div id="parallel-coords" class="vis"></div>
+      </div>
+      <div class="col-lg-1">
+        <div id="regional-map" class="vis"></div>
+        <div id="regional-bars" class="vis"></div>
       </div>
     </div>
     <!-- /.row -->
@@ -92,7 +174,7 @@ https://commons.wikimedia.org/wiki/Main_Page
       </div>
     </div>
     <!-- /.row -->
-	
+
 		<!-- California ISO Wind Data -->
 	<div class="row">
 		<div class="col-lg-12">
@@ -127,9 +209,11 @@ https://commons.wikimedia.org/wiki/Main_Page
   <!-- Choropleth and second visualization -->
   <script src="js/parallelCoords.js"></script>
   <script src="js/choroplethMap.js"></script>
+  <script src="js/regionalMap.js"></script>
+  <script src="js/regionalBars.js"></script>
 		<!-- Others -->
   <script src="js/main.js"></script>
-  
+
   <!-- Max's scripts -->
   <script src="js/utility_functions.js"></script>
   <script src="js/colorbrewer.js"></script>
