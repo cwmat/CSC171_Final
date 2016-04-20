@@ -25,6 +25,9 @@ ChoroplethMap = function(parentElement, data, mapData){
   this.displayData = []; // see data wrangling
 	this.dataExtent = [];
 	this.year = 2014;
+	this.turbines = turbines;
+	this.currentTurbines = turbines;
+	this.turbineRadio = "no-turbines";
 	// this.removeStates = ["PR", "HI", "AK"];
 
   // DEBUG RAW DATA
@@ -88,6 +91,17 @@ ChoroplethMap.prototype.initVis = function(){
 	vis.quantize.domain([0, d3.max(vis.dataExtent, function(d) { return d.capacity; })])
 					.range(d3.range(9).map(function(i) { return "q" + i + "-9"; }));
 
+	vis.ranges = vis.quantize.range().length;
+
+	// return quantize thresholds for the key
+	vis.qrange = function(max, num) {
+	    var a = [];
+	    for (var i=0; i<num; i++) {
+	        a.push(i*max/num);
+	    }
+	    return a;
+	}
+
 	// Draw us boundaries
 	vis.svg.selectAll("path")
 				.data(vis.mapData)
@@ -109,6 +123,17 @@ ChoroplethMap.prototype.initVis = function(){
 				.on("mouseenter", function(d) {	vis.populateTable(d); })
 				;
 
+		// // Turbines
+		// vis.dots = vis.svg.selectAll("circle")
+	  //     .data(vis.turbines);
+		//
+    // vis.dots.enter().append("circle")
+    //   .attr("r", 2)
+		// 	.attr("class", "turbine")
+    //   .attr("transform", function(d) {
+    //     return "translate(" + vis.proj([d.long_DD, d.lat_DD]) + ")";
+    //   });
+
 
 	// Time slider
 	// vis.timeSlider = d3.select("#time-slider").append("svg")
@@ -117,6 +142,61 @@ ChoroplethMap.prototype.initVis = function(){
 	//   .append("g")
 	//     .attr("transform", "translate(" + vis.margin.left + "," + vis.margin.top + ")");
 
+	// Legend
+	// make legend
+	// vis.boxmargin = 4,
+	// vis.lineheight = 14,
+	// vis.keyheight = 10,
+	// vis.keywidth = 40,
+	// vis.boxwidth = 2 * vis.keywidth;
+	//
+	// vis.title = ['Total Wind Capacity (MW)','occupancy rate'],
+	//     vis.titleheight = vis.title.length * vis.lineheight + vis.boxmargin;
+	//
+	// vis.legend = vis.svg.append("g")
+	//     .attr("transform", "translate ("+ vis.margin.left + "," + vis.margin.top + ")")
+	//     .attr("class", "legend");
+	//
+	// vis.legend.selectAll("text")
+	//     .data(vis.title)
+	//     .enter().append("text")
+	//     .attr("class", "legend-title")
+	//     .attr("y", function(d, i) { return (i+1)*vis.lineheight-2; })
+	//     .text(function(d) { return d; })
+	//
+	// // make legend box
+	// vis.lb = vis.legend.append("rect")
+	//     .attr("transform", "translate (0,"+vis.titleheight+")")
+	//     .attr("class", "legend-box")
+	//     .attr("width", vis.boxwidth)
+	//     .attr("height", vis.ranges*vis.lineheight+2*vis.boxmargin+vis.lineheight-vis.keyheight);
+	//
+	// // make quantized key legend items
+	// vis.li = vis.legend.append("g")
+	//     .attr("transform", "translate (8,"+(vis.titleheight+vis.boxmargin)+")")
+	//     .attr("class", "legend-items");
+	//
+	// vis.li.selectAll("rect")
+	//     .data(vis.quantize.range().map(function(color) {
+	//       var d = vis.quantize.invertExtent(color);
+	//       if (d[0] == null) d[0] = vis.x.domain()[0];
+	//       if (d[1] == null) d[1] = vis.x.domain()[1];
+	//       return d;
+	//     }))
+	//     .enter().append("rect")
+	//     .attr("y", function(d, i) { return i*vis.lineheight+vis.lineheight-vis.keyheight; })
+	//     .attr("width", vis.keywidth)
+	//     .attr("height", vis.keyheight)
+	//     .style("fill", function(d) { return vis.quantize(d[0]); });
+	//
+	// vis.li.selectAll("text")
+	//     .data(vis.qrange(vis.quantize.domain()[1], vis.ranges))
+	//     .enter().append("text")
+	//     .attr("x", 48)
+	//     .attr("y", function(d, i) { return (i+1)*vis.lineheight-2; })
+	//     .text(function(d) { return d; });
+
+	// Time slider
 	vis.slider = d3.slider().axis(true).min(1981).max(2014).step(1);
 	vis.test = d3.select("#time-slider").call(vis.slider);
 
@@ -141,6 +221,12 @@ ChoroplethMap.prototype.wrangleData = function() {
 
   // Wrangle
 	vis.aggregateOnYear(vis.year);
+
+	vis.currentTurbines = vis.turbines.filter(function(d) {
+		if (d.on_year == vis.year) {
+			return d;
+		}
+	});
 
   // Update the visualization
   vis.updateVis();
@@ -173,6 +259,15 @@ ChoroplethMap.prototype.updateVis = function() {
 					}
 				});
 				// .attr("d", vis.path)
+
+	// vis.dots
+	// 		.attr("r", 2)
+	// 		.attr("class", "turbine")
+	// 		.attr("transform", function(d) {
+	// 			return "translate(" + vis.proj([d.long_DD, d.lat_DD]) + ")";
+	// 		});
+	//
+	// vis.dots.exit().remove();
 
 
 
@@ -317,3 +412,43 @@ ChoroplethMap.prototype.populateTable = function(data) {
 	}
 
 }
+
+
+ChoroplethMap.prototype.plotTurbines = function() {
+	var vis = this;
+
+	// $("#plot-turbines").change(function() {
+		if (this.value == "turbines") {
+			vis.currentTurbines = vis.turbines;
+			// Turbines
+			vis.dots = vis.svg.selectAll("circle")
+					.data(vis.currentTurbines);
+
+			vis.dots.enter().append("circle")
+				.attr("r", 2)
+				.attr("class", "turbine")
+				.attr("transform", function(d) {
+					return "translate(" + vis.proj([d.long_DD, d.lat_DD]) + ")";
+			});
+		} else {
+			vis.currentTurbines = [];
+
+			vis.dots.exit().remove();
+		}
+	// });
+
+	// // Turbines
+	// vis.dots = vis.svg.selectAll("circle")
+	// 		.data(vis.turbines);
+	//
+	// vis.dots.enter().append("circle")
+	// 	.attr("r", 2)
+	// 	.attr("class", "turbine")
+	// 	.attr("transform", function(d) {
+	// 		return "translate(" + vis.proj([d.long_DD, d.lat_DD]) + ")";
+	// });
+}
+
+// var tempChangeFunction = function() {
+// 	choroplethMap.plotTurbines();
+// }
