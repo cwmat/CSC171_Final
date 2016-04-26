@@ -10,7 +10,7 @@ VerticalHeatmap = function(_parentElement, _data) {
     //console.log(this.data);
 
     this.initVis();
-}
+};
 
 VerticalHeatmap.prototype.initVis = function() {
 
@@ -35,46 +35,53 @@ VerticalHeatmap.prototype.initVis = function() {
         .append('g')
         .attr('transform', 'translate(' + vis.margin.left + ',' + vis.margin.top + ')');
 
-    vis.columns = ['wind_cap_2012', 'total_mw_2014', 'wind_cap_2018',
-        'wind_cap_2024', 'wind_cap_2030'];
+    vis.colsToUse = ['wind_cap_2012', 'total_mw_2014', 'wind_cap_2018', 'wind_cap_2024',
+                        'wind_cap_2030'];
 
-    vis.wrangleData();
-
-    vis.x = d3.time.scale().range([(vis.width / vis.columns.length), vis.width]);
+    vis.x = d3.time.scale().range([(vis.width / vis.colsToUse.length), vis.width]);
     vis.y = d3.scale.linear().range([vis.height, vis.margin.top]);
 
     vis.palette = colorbrewer.YlOrRd[5];
     vis.color = d3.scale.quantize().range(vis.palette);
 
-    vis.stateLabels = vis.svg.selectAll('.state-label');
+
     vis.columnLabels = vis.svg.selectAll('.column-label');
 
+    vis.wrangleData();
     vis.updateVis();
-}
+};
 
 VerticalHeatmap.prototype.updateVis = function() {
 
     var vis = this;
 
-    // Update x and y domains.
-    vis.x.domain(d3.extent(vis.formattedData, function(d) {
+    var dataToUse;
+    if(typeof vis.filteredData !== 'undefined') {
+        console.log('Using filtered data...');
+        console.log('Filtered length: ' + vis.filteredData.length);
+        dataToUse = vis.filteredData;
+    } else {
+        dataToUse = vis.formattedData;
+    }
+
+    //console.log(dataToUse);
+    // Update x domain.
+    vis.x.domain(d3.extent(dataToUse, function(d) {
         return d.year;
     }));
 
-    vis.y.domain([d3.min(vis.formattedData, function(d) {
-        return d.index;
-    }), d3.max(vis.formattedData, function(d) {
-        return d.index;
-    })]);
 
     // Update color domain.
-    vis.color.domain([100, 10000])
+    vis.color.domain([100, 10000]);
 
-    vis.circles = vis.svg.selectAll('circle').data(vis.formattedData);
+    // Update and enter.
+    var circles = vis.svg.selectAll('circle').data(dataToUse);
 
-    vis.circles.enter().append('circle')
+    circles.enter().append('circle')
         .attr({
-            class: 'circle',
+            class: function(d) {
+                return 'circle state-' + d.state;
+            },
             cx: function(d) {
                 return vis.x(d.year);
             },
@@ -95,7 +102,12 @@ VerticalHeatmap.prototype.updateVis = function() {
             }
         });
 
-    vis.stateLabels.data(vis.data)
+    var states = vis.getStates(dataToUse);
+
+    console.log(states);
+
+    vis.stateLabels = vis.svg.selectAll('.state-label');
+    vis.stateLabels.data(states)
         .enter()
         .append('text')
         .attr({
@@ -106,25 +118,35 @@ VerticalHeatmap.prototype.updateVis = function() {
             }
         })
         .text(function(d) {
-            return mapState(d.state);
+            return mapState(d);
         });
 
-    vis.columnLabels.data(vis.columns)
+    var columns = vis.getColumns(dataToUse);
+
+    console.log(columns);
+
+
+    vis.columnLabels.data(columns)
         .enter().append('text')
         .attr({
             x: function(d) {
-                var parts = d.split('_');
-                var year = formatYear.parse(parts[2]);
+                var year = formatYear.parse(d.toString());
                 return vis.x(year);
             },
             y: vis.margin.top / 2,
             'text-anchor': 'middle'
         }).text(function(d) {
-        var parts = d.split('_');
-        return parts[2];
+        return d.toString();
     });
 
-}
+    vis.attachEventListeners();
+
+    var exit = circles.exit();
+    console.log(exit);
+    //circles.exit().transition().remove();
+    //vis.columnLabels.exit().transition().remove();
+
+};
 
 VerticalHeatmap.prototype.wrangleData = function() {
 
@@ -134,7 +156,7 @@ VerticalHeatmap.prototype.wrangleData = function() {
 
     for(var i = 0; i < vis.data.length; i++) {
         var current = vis.data[i];
-        vis.columns.forEach(function(col) {
+        vis.colsToUse.forEach(function(col) {
             var parts = col.split('_');
             var year = formatYear.parse(parts[2]);
             vis.formattedData.push({
@@ -147,5 +169,96 @@ VerticalHeatmap.prototype.wrangleData = function() {
     }
 
     console.log(vis.formattedData);
-}
+};
 
+VerticalHeatmap.prototype.attachEventListeners = function() {
+
+    var vis = this;
+
+    $(document).ready(function() {
+        var checkboxes = $('#projected-capacity-controls .checkbox');
+        var yearsChecked = [];
+
+        checkboxes.on('change', function() {
+            var checked = $('#projected-capacity-controls .checkbox:checked');
+            var currentlyChecked = [];
+            checked.each(function() {
+                var value = formatYear.parse($(this).val()).valueOf();
+                currentlyChecked.push(value);
+            });
+
+            if(yearsChecked.length > 0) {
+                vis.yearsChecked = intersection(currentlyChecked, yearsChecked);
+            } else {
+                vis.yearsChecked = currentlyChecked;
+            }
+
+            //console.log(vis.yearsChecked);
+            vis.filterData();
+            vis.updateVis();
+        });
+
+        /*$(document).click(function() {
+            d3.selectAll('#projected-capacity .active');
+        });*/
+    });
+
+    d3.selectAll('.state-label').on({
+        click: function(d, i) {
+            d3.event.stopPropagation();
+            var row = d3.select(this);
+
+        },
+        mouseover: function() {
+            d3.select(this).style({
+                'cursor': 'pointer',
+                'font-weight': 'bold'
+            });
+        },
+        mouseleave: function() {
+            d3.select(this).style('font-weight', 'normal');
+        }
+    });
+
+
+};
+
+VerticalHeatmap.prototype.filterData = function() {
+
+    var vis = this;
+
+    vis.filteredData = vis.formattedData.filter(function(d) {
+        //console.log(d);
+        return vis.yearsChecked.indexOf(d.year.valueOf()) !== -1;
+    });
+
+};
+
+
+
+
+
+VerticalHeatmap.prototype.getColumns = function(data) {
+    var vis = this;
+
+    var columns = [];
+
+    data.forEach(function(d) {
+        if(columns.indexOf(d.year.getFullYear()) === -1) {
+            columns.push(d.year.getFullYear());
+        }
+    });
+
+    return columns;
+};
+
+VerticalHeatmap.prototype.getStates = function(data) {
+
+    var vis = this;
+
+    var m = d3.map(data, function(d) {
+        return d.state;
+    });
+
+    return m.keys().sort();
+};

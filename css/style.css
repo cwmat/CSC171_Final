@@ -163,6 +163,21 @@ svg {
     opacity: 0.05;
 }
 
+#projected-capacity, #caiso {
+    width: 800px;
+    margin-right: 0;
+    float: left;
+}
+
+#projected-capacity-controls, #caiso-controls {
+    float: right;
+}
+
+/* Overrides default Bootstrap display: inline-block */
+#projected-capacity-controls .form-group {
+    display: block;
+}
+
 th {
   font-size: 0.75em;
 }
