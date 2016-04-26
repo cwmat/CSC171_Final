@@ -48,7 +48,7 @@ d3.csv('data/projected_capacity.csv', function(error, data) {
     });
 
     //console.log(data);
-    //createHeatmap(data);
+    createHeatmap(data);
 });
 
 
