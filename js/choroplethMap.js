@@ -103,7 +103,7 @@ ChoroplethMap.prototype.initVis = function(){
 	}
 
 	// Draw us boundaries
-	console.log(vis.dataMap);
+	// console.log(vis.dataMap);
 	vis.svg.selectAll("path")
 				.data(vis.mapData)
 			.enter().append("path")
@@ -149,7 +149,7 @@ ChoroplethMap.prototype.initVis = function(){
 			.attr("class", "legendQuant")
 			.attr("transform", "translate(20, 420)");
 
-	console.log("translate(20, " + vis.height - 20 + ")");
+	// console.log("translate(20, " + vis.height - 20 + ")");
 
 	vis.legend = d3.legend.color()
 			.labelFormat(d3.format(",.2f"))
@@ -327,6 +327,8 @@ ChoroplethMap.prototype.aggregateOnYear = function(year) {
 		stateSet.add(d.state);
 	});
 
+	console.log(stateSet);
+
 	// console.log(stateSet);
 
 	// Cycle through each state and for each state aggregate stats
@@ -433,6 +435,14 @@ ChoroplethMap.prototype.populateTable = function(data) {
 		$("#map-table-height").html(vis.dataMap[key].height);
 		$("#map-table-blade").html(vis.dataMap[key].blade);
 		$("#map-table-rotor").html(vis.dataMap[key].rotor);
+	} else {
+		$("#map-table-state").html(data.properties.name);
+		$("#map-table-year").html(vis.year);
+		$("#map-table-capacity").html(0);
+		$("#map-table-turbines").html(0);
+		$("#map-table-height").html(0);
+		$("#map-table-blade").html(0);
+		$("#map-table-rotor").html(0);
 	}
 
 }
