@@ -24,7 +24,7 @@ ChoroplethMap = function(parentElement, data, mapData){
   this.data = data;
   this.displayData = []; // see data wrangling
 	this.dataExtent = [];
-	this.year = 2014;
+	this.year = 1982;
 	this.turbines = turbines;
 	this.currentTurbines = turbines;
 	this.turbineRadio = "no-turbines";
@@ -103,6 +103,7 @@ ChoroplethMap.prototype.initVis = function(){
 	}
 
 	// Draw us boundaries
+	console.log(vis.dataMap);
 	vis.svg.selectAll("path")
 				.data(vis.mapData)
 			.enter().append("path")
@@ -144,6 +145,24 @@ ChoroplethMap.prototype.initVis = function(){
 
 	// Legend
 	// make legend
+	vis.svg.append("g")
+			.attr("class", "legendQuant")
+			.attr("transform", "translate(20, 420)");
+
+	console.log("translate(20, " + vis.height - 20 + ")");
+
+	vis.legend = d3.legend.color()
+			.labelFormat(d3.format(",.2f"))
+			.useClass(true)
+			.title("Installed Capacity (MW)")
+			.scale(vis.quantize);
+
+	vis.svg.select(".legendQuant")
+			.call(vis.legend);
+
+
+	//
+	//
 	// vis.boxmargin = 4,
 	// vis.lineheight = 14,
 	// vis.keyheight = 10,
@@ -195,6 +214,7 @@ ChoroplethMap.prototype.initVis = function(){
 	//     .attr("x", 48)
 	//     .attr("y", function(d, i) { return (i+1)*vis.lineheight-2; })
 	//     .text(function(d) { return d; });
+	// End Legend
 
 	// Time slider
 	vis.slider = d3.slider().axis(true).min(1981).max(2014).step(1);
@@ -222,11 +242,11 @@ ChoroplethMap.prototype.wrangleData = function() {
   // Wrangle
 	vis.aggregateOnYear(vis.year);
 
-	vis.currentTurbines = vis.turbines.filter(function(d) {
-		if (d.on_year == vis.year) {
-			return d;
-		}
-	});
+	// vis.currentTurbines = vis.turbines.filter(function(d) {
+	// 	if (d.on_year == vis.year) {
+	// 		return d;
+	// 	}
+	// });
 
   // Update the visualization
   vis.updateVis();
@@ -276,6 +296,10 @@ ChoroplethMap.prototype.updateVis = function() {
 
 
   // Call axis functions with the new domain
+	// Update Legend
+	vis.legend.scale(vis.quantize);
+	vis.svg.select(".legendQuant")
+			.call(vis.legend);
 
 }
 
@@ -380,7 +404,7 @@ ChoroplethMap.prototype.slide = function(year) {
   var vis = this;
 
 	vis.year = year;
-  console.log(year);
+  // console.log(year);
 
 	setTimeout(function() {
 		vis.wrangleData();
@@ -395,8 +419,8 @@ ChoroplethMap.prototype.slide = function(year) {
 ChoroplethMap.prototype.populateTable = function(data) {
 	var vis = this;
 
-	console.log(data);
-	console.log(vis.dataMap);
+	// console.log(data);
+	// console.log(vis.dataMap);
 
 	if (data.properties.postal && vis.dataMap[data.properties.postal]) {
 

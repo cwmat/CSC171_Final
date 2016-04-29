@@ -88,7 +88,7 @@ RegionalMap.prototype.initVis = function(){
     // console.log(d);
     vis.regionalStates[d.state] = d.region;
   });
-  console.log(vis.regionalStates);
+  // console.log(vis.regionalStates);
 
 	// Map projection and path generator
 	vis.proj = d3.geo.albersUsa()

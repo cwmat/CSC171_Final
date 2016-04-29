@@ -52,7 +52,7 @@ RegionalBars = function(parentElement, data){
     });
   });
 
-  console.log(this.displayData);
+  // console.log(this.displayData);
 
 
 
