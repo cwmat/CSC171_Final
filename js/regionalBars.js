@@ -3,7 +3,6 @@
 	* CSC 171 - Studio 2 Group 1
 	* Final Project
 	* 	Charles Mateer
-	* 	Max DeCurtins
 	*
 	*/
 
