@@ -155,6 +155,19 @@ svg {
 .q7-9 { fill:rgb(8,81,156); }
 .q8-9 { fill:rgb(8,48,107); }
 
+#map-table-state {
+  font-weight: bold;
+}
+
+.legendTitle {
+  font-size: 1.5em;
+  font-weight: bold;
+}
+
+.label {
+  font-size: 1em;
+}
+
 /* Max CSS */
 .line {
     fill: none;

@@ -16,10 +16,11 @@
   *     -- the input dataset
   *
   */
-ChoroplethMap = function(parentElement, data, mapData){
+ChoroplethMap = function(parentElement, legendElement, data, mapData){
 	var vis = this;
 
 	this.parentElement = parentElement;
+	this.legendElement = legendElement;
 	this.mapData = mapData;
   this.data = data;
   this.displayData = []; // see data wrangling
@@ -64,7 +65,8 @@ ChoroplethMap.prototype.initVis = function(){
 
 	vis.margin = {top: 0, right: 0, bottom: 0, left: 0};
 
-	vis.width = 960 - vis.margin.left - vis.margin.right,
+	// vis.width = 960 - vis.margin.left - vis.margin.right,
+	vis.width = 877.5 - vis.margin.left - vis.margin.right,
   vis.height = 600 - vis.margin.top - vis.margin.bottom;
 
   // SVG drawing area
@@ -79,7 +81,8 @@ ChoroplethMap.prototype.initVis = function(){
 
 	// Map projection and path generator
 	vis.proj = d3.geo.albersUsa()
-				.scale(1280)
+				.scale(1100)
+				// .scale(1280)
 				.translate([vis.width / 2, vis.height / 2]);
 
 	vis.path = d3.geo.path()
@@ -145,9 +148,22 @@ ChoroplethMap.prototype.initVis = function(){
 
 	// Legend
 	// make legend
-	vis.svg.append("g")
+	vis.legendMargin = {top: 0, right: 0, bottom: 0, left: 0};
+
+	vis.legendWidth = 200 - vis.legendMargin.left - vis.legendMargin.right,
+	vis.legendHeight = 400 - vis.legendMargin.top - vis.legendMargin.bottom;
+
+	// SVG drawing area
+	vis.legendSvg = d3.select("#" + vis.legendElement).append("svg")
+			.attr("width", vis.legendWidth + vis.legendMargin.left + vis.legendMargin.right)
+			.attr("height", vis.legendHeight + vis.legendMargin.top + vis.legendMargin.bottom)
+		.append("g")
+			.attr("transform", "translate(" + vis.legendMargin.left + "," + vis.legendMargin.top + ")");
+
+	vis.legendSvg.append("g")
 			.attr("class", "legendQuant")
-			.attr("transform", "translate(20, 420)");
+			.attr("transform", "translate(0, 20)");
+			// .attr("transform", "translate(20, 420)");
 
 	// console.log("translate(20, " + vis.height - 20 + ")");
 
@@ -155,9 +171,11 @@ ChoroplethMap.prototype.initVis = function(){
 			.labelFormat(d3.format(",.2f"))
 			.useClass(true)
 			.title("Installed Capacity (MW)")
+			.shapeHeight(35)
+			.shapeWidth(35)
 			.scale(vis.quantize);
 
-	vis.svg.select(".legendQuant")
+	vis.legendSvg.select(".legendQuant")
 			.call(vis.legend);
 
 
@@ -219,6 +237,16 @@ ChoroplethMap.prototype.initVis = function(){
 	// Time slider
 	vis.slider = d3.slider().axis(true).min(1981).max(2014).step(1);
 	vis.test = d3.select("#time-slider").call(vis.slider);
+
+	// Set year 2000 apart
+	$(document).ready(function() {
+		$(".tick text:contains(2000)").css({
+			"font-weight": "bold",
+			"fill": "orange",
+			"font-size": "1.3em",
+		});
+	});
+
 
 	// console.log(vis.slider.value());
 	// vis.slider.on("drag", function() {
@@ -298,7 +326,7 @@ ChoroplethMap.prototype.updateVis = function() {
   // Call axis functions with the new domain
 	// Update Legend
 	vis.legend.scale(vis.quantize);
-	vis.svg.select(".legendQuant")
+	vis.legendSvg.select(".legendQuant")
 			.call(vis.legend);
 
 }
@@ -420,6 +448,7 @@ ChoroplethMap.prototype.slide = function(year) {
   */
 ChoroplethMap.prototype.populateTable = function(data) {
 	var vis = this;
+	var format = d3.format(",.2f");
 
 	// console.log(data);
 	// console.log(vis.dataMap);
@@ -430,11 +459,11 @@ ChoroplethMap.prototype.populateTable = function(data) {
 
 		$("#map-table-state").html(data.properties.name);
 		$("#map-table-year").html(vis.year);
-		$("#map-table-capacity").html(vis.dataMap[key].capacity);
-		$("#map-table-turbines").html(vis.dataMap[key].turbines);
-		$("#map-table-height").html(vis.dataMap[key].height);
-		$("#map-table-blade").html(vis.dataMap[key].blade);
-		$("#map-table-rotor").html(vis.dataMap[key].rotor);
+		$("#map-table-capacity").html(format(vis.dataMap[key].capacity));
+		$("#map-table-turbines").html(format(vis.dataMap[key].turbines));
+		$("#map-table-height").html(format(vis.dataMap[key].height));
+		$("#map-table-blade").html(format(vis.dataMap[key].blade));
+		$("#map-table-rotor").html(format(vis.dataMap[key].rotor));
 	} else {
 		$("#map-table-state").html(data.properties.name);
 		$("#map-table-year").html(vis.year);

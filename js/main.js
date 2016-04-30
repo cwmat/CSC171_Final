@@ -104,7 +104,7 @@ function loadData() {
 function createVis() {
 
 	// Instantiate visualization objects here
-	choroplethMap = new ChoroplethMap("choropleth-map", choroplethMapData, usGeometry);
+	choroplethMap = new ChoroplethMap("choropleth-map", "choropleth-legend", choroplethMapData, usGeometry);
 	regionalMap = new RegionalMap("regional-map", parallelCoordsData, usGeometry);
 	regionalBars = new RegionalBars("regional-bars", parallelCoordsData);
 	parallelCoords = new ParallelCoords("parallel-coords", parallelCoordsData, regionalMap, regionalBars);

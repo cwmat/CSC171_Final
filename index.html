@@ -68,44 +68,39 @@ https://commons.wikimedia.org/wiki/Main_Page
 
 		<!-- Map -->
 		<div class="row">
-      <div class="col-lg-10">
+      <div class="col-lg-9">
         <div id="choropleth-map" class="vis"></div>
       </div>
-      <div class="col-lg-2">
+      <div class="col-lg-3">
         <h2 id="map-table-state">State</h2>
         <table class="table table-hover">
           <tr>
             <th>Year</th>
-            <td id="map-table-year">{TEMP}</td>
+            <td id="map-table-year">{Hover}</td>
           </tr>
           <tr>
             <th>Total Capacity (MW)</th>
-            <td id="map-table-capacity">{TEMP}</td>
+            <td id="map-table-capacity">{Hover}</td>
           </tr>
           <tr>
             <th>Total Number of Turbines</th>
-            <td id="map-table-turbines">{TEMP}</td>
+            <td id="map-table-turbines">{Hover}</td>
           </tr>
           <tr>
             <th>Mean Height of Turbines (m)</th>
-            <td id="map-table-height">{TEMP}</td>
+            <td id="map-table-height">{Hover}</td>
           </tr>
           <tr>
             <th>Mean Blade Length (m)</th>
-            <td id="map-table-blade">{TEMP}</td>
+            <td id="map-table-blade">{Hover}</td>
           </tr>
           <tr>
             <th>Mean Rotor Sweep Area</th>
-            <td id="map-table-rotor">{TEMP}</td>
+            <td id="map-table-rotor">{Hover}</td>
           </tr>
         </table>
+        <div id="choropleth-legend"></div>
       </div>
-      <!-- <div id="plot-turbines">
-        <form>
-          <input type="radio" name="turbines-radio" value="turbines" onchange="tempChangeFunction(this.value)"> Show Turbines (Still troubleshooting, data is large and causes lag)<br>
-          <input type="radio" name="turbine-radio" value="no-turbines"  onchange="tempChangeFunction(this.value)" checked> Turbines off<br>
-        </form>
-      </div> -->
       <div class="col-lg-12">
         <div id="time-slider"></div>
       </div>
