@@ -195,14 +195,24 @@ ParallelCoords.prototype.initVis = function(){
 
 	// Handles a brush event, toggling the display of foreground lines.
 	function brush() {
+		var stateSet = new Set();
 	  vis.actives = vis.dimensions.filter(function(p) {
 			return !vis.y[p].brush.empty(); }),
 	      vis.extents = vis.actives.map(function(p) { return vis.y[p].brush.extent(); });
 	  vis.foreground.style("display", function(d) {
 	    return vis.actives.every(function(p, i) {
-	      return vis.extents[i][0] <= d[p] && d[p] <= vis.extents[i][1];
+				// console.log(vis.actives);
+	      // return vis.extents[i][0] <= d[p] && d[p] <= vis.extents[i][1];
+				if (vis.extents[i][0] <= d[p] && d[p] <= vis.extents[i][1]) {
+					// console.log(d);
+					stateSet.add(d.state);
+					return true;
+				}
 	    }) ? null : "none";
 	  });
+		// console.log(stateSet);
+		// console.log(vis.foreground[0][0].__data__);
+		vis.regionalMap.wrangleData(stateSet);
 	}
 
 
@@ -308,6 +318,26 @@ ParallelCoords.prototype.populateTable = function(data) {
 	$("#coords-table-water").html(dec(data.water_savings_gallons));
 	$("#coords-table-co2").html(dec(data.co2_avoided_metric_tons));
 }
+
+// /**
+//   * Get states from brush
+//   *
+//   */
+// ParallelCoords.prototype.brushStates = function() {
+//   var vis = this;
+//
+// 	var stateSet = new Set();
+//
+// 	vis.foreground.forEach(function(d) {
+// 		d.forEach(function(i) {
+// 			// console.log(i.__data__);
+// 			stateSet.add(i.__data__.state);
+// 		});
+// 	});
+//
+// 	// console.log(stateSet);
+//
+// }
 
 // Stack Exchange - Tuan: http://stackoverflow.com/questions/196972/convert-string-to-title-case-with-javascript
 String.prototype.toProperCase = function () {

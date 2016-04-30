@@ -210,8 +210,6 @@ ChoroplethMap.prototype.aggregateOnYear = function(year) {
 		stateSet.add(d.state);
 	});
 
-	console.log(stateSet);
-
 	// Cycle through each state and for each state aggregate stats
 	stateSet.forEach(function(d) {
 		var state = d;

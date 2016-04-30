@@ -24,7 +24,11 @@ RegionalMap = function(parentElement, data, mapData){
   this.displayData = []; // see data wrangling
 	this.dataExtent = [];
 	this.year = 1995;
-  this.highlightedState = "all";
+  this.highlightedState = new Set();
+
+	// Clear out set
+	this.highlightedState.add("temp");
+	this.highlightedState.clear();
 
   // Make data map for regional states
   this.regionalStates = {};
@@ -108,7 +112,6 @@ RegionalMap.prototype.initVis = function(){
         })
 				.attr("d", vis.path);
 
-
   // TODO: (Filter, aggregate, modify data)
   vis.wrangleData();
 }
@@ -117,8 +120,16 @@ RegionalMap.prototype.initVis = function(){
   * Manipulate data
   *
   */
-RegionalMap.prototype.wrangleData = function() {
+RegionalMap.prototype.wrangleData = function(states) {
   var vis = this;
+
+
+	if (states) {
+		vis.highlightedState = states;
+	}
+	console.log(vis.highlightedState);
+
+
 
   // Wrangle
 	// vis.aggregateOnYear(vis.year);
@@ -135,33 +146,55 @@ RegionalMap.prototype.updateVis = function() {
   var vis = this;
 
 	// Update us boundaries
+// 	vis.svg.selectAll(".regional")
+//     .attr("class", function(d) {
+//       if (vis.highlightedState == "all") {
+//         var stateName = d.properties.name;
+//         var key = stateName.toLowerCase();
+//         return "regional state region-" + vis.regionalStates[key];
+//       } else if (vis.highlightedState == d.properties.name.toLowerCase()) {
+//         console.log("madeit");
+//         var stateName = d.properties.name;
+//         var key = stateName.toLowerCase();
+//         return "regional state region-" + vis.regionalStates[key];
+//       } else {
+//         console.log(vis.highlightedState);
+//         console.log(d.properties.name);
+//         return "regional grey-state";
+//       }
+//     });
+// }
+
 	vis.svg.selectAll(".regional")
     .attr("class", function(d) {
-      if (vis.highlightedState == "all") {
+      if (vis.highlightedState && vis.highlightedState.has(d.properties.name.toLowerCase())) {
         var stateName = d.properties.name;
         var key = stateName.toLowerCase();
         return "regional state region-" + vis.regionalStates[key];
-      } else if (vis.highlightedState == d.properties.name.toLowerCase()) {
+      } else if (vis.highlightedState.size < 1) {
         console.log("madeit");
         var stateName = d.properties.name;
         var key = stateName.toLowerCase();
         return "regional state region-" + vis.regionalStates[key];
       } else {
-        console.log(vis.highlightedState);
-        console.log(d.properties.name);
+        // console.log(vis.highlightedState);
+        // console.log(d.properties.name);
         return "regional grey-state";
       }
     });
+		// console.log(vis.highlightedState);
 }
 
-RegionalMap.prototype.highlightState = function(state) {
+
+RegionalMap.prototype.highlightState = function(states) {
 	var vis = this;
 
-	var stateKey = state.toLowerCase();
+	// var stateKey = state.toLowerCase();
+	//
+	// vis.highlightedState = stateKey;
+	//
+  // // console.log(stateKey);
 
-	vis.highlightedState = stateKey;
-
-  // console.log(stateKey);
 
   vis.updateVis();
 
