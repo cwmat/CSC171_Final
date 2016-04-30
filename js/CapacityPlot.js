@@ -68,7 +68,7 @@ CapacityPlot.prototype.updateVis = function() {
         dataToUse = vis.data;
     }
 
-    /*****
+    /************************************
      * Enter, update, exit on the columns.
      */
     var columns = vis.svg.selectAll('.year-column')
@@ -77,11 +77,13 @@ CapacityPlot.prototype.updateVis = function() {
     columns.enter().append('g')
         .attr('class', 'year-column');
 
-    columns.attr('transform', function(d, i) {
+    columns.exit().transition().remove();
+
+    columns.transition().duration(1000).attr('transform', function(d, i) {
         return 'translate(' + (100 + (1.5 * i * 50)) + ', 0)';
     });
 
-    columns.exit().transition().remove();
+
 
 
     // Do a nested selection and data binding to fill each column with circles for that year.
@@ -135,7 +137,7 @@ CapacityPlot.prototype.updateVis = function() {
             return mapState(d);
         });
 
-    /*****
+    /******************************************
      * Enter, update, exit on the column labels.
      */
     var columnLabels = vis.svg.selectAll('.column-label')
@@ -154,14 +156,15 @@ CapacityPlot.prototype.updateVis = function() {
             return d.key;
         });
 
-    columnLabels.attr('x', function(d, i) {
+    columnLabels.exit().transition().remove();
+
+    columnLabels.transition().duration(1000).attr('x', function(d, i) {
         return (130 + (1.5 * i * 50));
     });
 
     vis.attachEventListeners();
 
 
-    columnLabels.exit().transition().remove();
 };
 
 CapacityPlot.prototype.appendSVG = function() {
