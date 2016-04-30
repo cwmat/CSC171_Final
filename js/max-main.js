@@ -5,8 +5,9 @@
 // Variable for CA ISO visualization instance
 var caiso, brush;
 
-// Variable for projected capacity vertical heatmap visualization.
-var vertHeatmap;
+// Variable for projected capacity plot visualization.
+var capacityPlot, capacityLegend;
+
 
 d3.json('data/caiso_data.json', function(error, data) {
 
@@ -25,8 +26,7 @@ d3.json('data/caiso_data.json', function(error, data) {
        return d.date != '2011-06-30';
     });
 
-
-    createCaiso(data);
+    //createCaiso(data);
 });
 
 d3.csv('data/projected_capacity.csv', function(error, data) {
@@ -34,21 +34,29 @@ d3.csv('data/projected_capacity.csv', function(error, data) {
     if(error) throw error;
 
     data.forEach(function(d) {
-        d.mw_from_wind = +d.mw_from_wind;
-        d.total_mw_2014 = +d.total_mw_2014;
-        d.total_mwh_2014 = +d.total_mwh_2014;
+        d.mw_wind_2014 = +d.mw_wind_2014;
         d.wind_cap_2012 = (d.wind_cap_2012 != 'null') ? +d.wind_cap_2012 : false;
         d.wind_cap_2018 = (d.wind_cap_2018 != 'null') ? +d.wind_cap_2018 : false;
         d.wind_cap_2024 = (d.wind_cap_2024 != 'null') ? +d.wind_cap_2024 : false;
         d.wind_cap_2030 = (d.wind_cap_2030 != 'null') ? +d.wind_cap_2030 : false;
+
+        // Remove these data as they aren't needed and may be inaccurate
+        if(d.hasOwnProperty('total_mw_2014')) {
+            delete d.total_mw_2014;
+        }
+        if(d.hasOwnProperty('total_mwh_2014')) {
+            delete d.total_mwh_2014;
+        }
     });
 
+    // Discard DC as there isn't data in both sources for the District.
     data = data.filter(function(obj) {
         return obj.state != 'DC';
     });
 
     //console.log(data);
-    createHeatmap(data);
+    createCapacityPlot(data);
+
 });
 
 
@@ -65,8 +73,9 @@ function brushed() {
     caiso.filterByDates(caiso.getData(), valuesForFilter[0], valuesForFilter[1]);
 }
 
-function createHeatmap(data) {
-    vertHeatmap = new VerticalHeatmap('projected-capacity', data);
+function createCapacityPlot(data) {
+    capacityPlot = new CapacityPlot('projected-capacity', data);
+    capacityLegend = new Legend('projected-capacity-legend');
 }
 
 // Some jQuery stuff to power the viz controls
