@@ -17,6 +17,10 @@ h2 {
   margin-bottom: 40px;
 }
 
+.page-header {
+  margin-top: 50px;
+}
+
 .container-fluid {
 	padding-right: 30px;
 	padding-left: 30px;
@@ -63,7 +67,7 @@ h2 {
 }
 
 .vis {
-  margin-top: 100px;
+  margin-top: 50px;
 }
 
 svg {
