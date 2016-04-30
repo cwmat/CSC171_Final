@@ -27,6 +27,16 @@ ParallelCoords = function(parentElement, data, regionalMap, regionalBars){
 	this.regionalMap = regionalMap;
 	this.regionalBars = regionalBars;
 
+	// Normalize millions/billions
+	this.displayData.forEach(function(d) {
+		var bill = 1000000000,
+				mill = 1000000;
+		d.project_invest = d.project_invest / bill;
+		d.land_lease_total_million = d.land_lease_total_million / mill;
+		d.water_savings_gallons = d.water_savings_gallons / bill;
+		d.co2_avoided_metric_tons = d.co2_avoided_metric_tons / mill;
+	});
+
   // DEBUG RAW DATA
   // console.log(this.data);
 
@@ -280,21 +290,29 @@ ParallelCoords.prototype.clearRegionalMap = function() {
 
 ParallelCoords.prototype.populateTable = function(data) {
 	var vis = this;
+	var format = d3.format(",d");
+	var dec = d3.format(",.2f");
+	var percent = d3.format("%");
+	var money = d3.format("$")
 
-	$("#coords-table-state").html(data.state);
-	$("#coords-table-capacity").html(data.installed_capacity_mw);
-	$("#coords-table-construction").html(data.capacity_under_construction_mw);
-	$("#coords-table-projects").html(data.projects_online);
-	$("#coords-table-turbines").html(data.num_turbines);
-	$("#coords-table-percent").html(data.in_state_energy_production_2014);
-	$("#coords-table-jobs").html(data.wind_jobs_2014);
-	$("#coords-table-facilities").html(data.facilities);
-	$("#coords-table-investment").html(data.project_invest);
-	$("#coords-table-lease").html(data.land_lease_total_million);
-	$("#coords-table-water").html(data.water_savings_gallons);
-	$("#coords-table-co2").html(data.co2_avoided_metric_tons);
+	$("#coords-table-state").html(data.state.toProperCase());
+	$("#coords-table-capacity").html(format(data.installed_capacity_mw));
+	$("#coords-table-construction").html(format(data.capacity_under_construction_mw));
+	$("#coords-table-projects").html(format(data.projects_online));
+	$("#coords-table-turbines").html(format(data.num_turbines));
+	$("#coords-table-percent").html(percent(data.in_state_energy_production_2014));
+	$("#coords-table-jobs").html(format(data.wind_jobs_2014));
+	$("#coords-table-facilities").html(format(data.facilities));
+	$("#coords-table-investment").html(money(data.project_invest));
+	$("#coords-table-lease").html(money(data.land_lease_total_million));
+	$("#coords-table-water").html(dec(data.water_savings_gallons));
+	$("#coords-table-co2").html(dec(data.co2_avoided_metric_tons));
 }
 
+// Stack Exchange - Tuan: http://stackoverflow.com/questions/196972/convert-string-to-title-case-with-javascript
+String.prototype.toProperCase = function () {
+    return this.replace(/\w\S*/g, function(txt){return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase();});
+};
 
 
 

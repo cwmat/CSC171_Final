@@ -127,6 +127,12 @@ svg {
   shape-rendering: crispEdges;
 }
 
+#coords-table-state {
+  margin-bottom: 10px;
+  text-align: left;
+  min-width: 300px;
+}
+
 .axis line,
 .axis path {
   fill: none;
