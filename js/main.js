@@ -38,7 +38,6 @@ function loadData() {
 	  .defer(d3.csv, "data/summary_wind_data.csv")
 	  .defer(d3.json, "data/us.topojson")
 		.defer(d3.csv, "data/wind_time_series.csv")
-		// .defer(d3.csv, "data/usgs_turbines.csv")
 	  .await(function(error, windData, usData, windTimeSeries){
 			if(!error) {
 				/**
@@ -88,13 +87,6 @@ function loadData() {
 						}
 					}
 				});
-
-				/**
-				  * Turbines
-				  *
-				  */
-					// turbines = usgsTurbines;
-
 
 				createVis();
 			}

@@ -41,7 +41,7 @@ RegionalBars = function(parentElement, data){
       name: "northeast",
       total_capacity: 0,
     },
-  ]; // see data wrangling
+  ];
 
   vis.data.forEach(function(d) {
     vis.displayData.forEach(function(p) {
@@ -50,6 +50,8 @@ RegionalBars = function(parentElement, data){
       }
     });
   });
+
+	console.log(this.displayData);
 
   // console.log(this.displayData);
 
@@ -126,6 +128,15 @@ RegionalBars.prototype.initVis = function(){
     vis.bars = vis.svg.selectAll("rect")
       .data(vis.displayData);
 
+		// // Change axis text
+		// $(document).ready(function() {
+		// 	$(".tick text:contains('west')").html("W");
+		// 	$(".tick text:contains('southwest')").html("SW");
+		// 	$(".tick text:contains('midwest')").html("MW");
+		// 	$(".tick text:contains('southeast')").html("SE");
+		// 	$(".tick text:contains('northeast')").html("NE");
+		// });
+
     // Udpate
     // vis.bars.on("mouseover", barTip.show).on("mouseleave", barTip.hide)
     // .transition()
@@ -179,8 +190,43 @@ RegionalBars.prototype.initVis = function(){
   * Manipulate data
   *
   */
-RegionalBars.prototype.wrangleData = function() {
+RegionalBars.prototype.wrangleData = function(states) {
   var vis = this;
+
+	// if (states) {
+	// 	vis.displayData.forEach(function(d) {
+	// 		if (true) {
+	// 			console.log(d);
+	// 		}
+	// 	});
+	// }
+	if (states) {
+		if (states.size < 1) {
+			vis.data.forEach(function(d) {
+				vis.displayData.forEach(function(p) {
+					if (d.region == p.name) {
+						p.total_capacity = p.total_capacity + d.installed_capacity_mw;
+					}
+				});
+			});
+		} else {
+			// Clear out display data
+			vis.displayData.forEach(function(d) {
+				d.total_capacity = 0;
+			});
+
+			vis.data.forEach(function(d) {
+				if (states.has(d.state.toLowerCase())) {
+					vis.displayData.forEach(function(p) {
+						if (d.region == p.name) {
+							p.total_capacity = p.total_capacity + d.installed_capacity_mw;
+						}
+					});
+				}
+			});
+		}
+	}
+	console.log(vis.displayData);
 
   // Wrangle
 
@@ -195,6 +241,31 @@ RegionalBars.prototype.wrangleData = function() {
   */
 RegionalBars.prototype.updateVis = function() {
   var vis = this;
+
+	// Domains
+	vis.x.domain(vis.displayData.map(function(d) { return d.name; }));
+	vis.y.domain([0, d3.max(vis.displayData, function(d) { return d.total_capacity; })]);
+
+	vis.bars
+		.transition()
+		.duration(1000)
+		.attr({
+			x: function(d) { return vis.x(d.name); },
+			y: function(d) { return vis.y(d.total_capacity); },
+			height: function(d) { return vis.height - vis.y(d.total_capacity); },
+			width: vis.x.rangeBand(),
+			class: function(d) { return "bar region-" + d.name; },
+		})
+
+		// Update axiis
+		vis.svg.select(".y-axis")
+				.transition()
+				.duration(1000)
+				.call(vis.yAxis);
+		vis.svg.select(".x-axis")
+				.transition()
+				.duration(1000)
+				.call(vis.xAxis);
 
 
 }

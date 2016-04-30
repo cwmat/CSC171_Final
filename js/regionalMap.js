@@ -127,7 +127,7 @@ RegionalMap.prototype.wrangleData = function(states) {
 	if (states) {
 		vis.highlightedState = states;
 	}
-	console.log(vis.highlightedState);
+	// console.log(vis.highlightedState);
 
 
 
@@ -172,7 +172,7 @@ RegionalMap.prototype.updateVis = function() {
         var key = stateName.toLowerCase();
         return "regional state region-" + vis.regionalStates[key];
       } else if (vis.highlightedState.size < 1) {
-        console.log("madeit");
+        // console.log("madeit");
         var stateName = d.properties.name;
         var key = stateName.toLowerCase();
         return "regional state region-" + vis.regionalStates[key];

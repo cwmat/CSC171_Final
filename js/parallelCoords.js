@@ -213,6 +213,7 @@ ParallelCoords.prototype.initVis = function(){
 		// console.log(stateSet);
 		// console.log(vis.foreground[0][0].__data__);
 		vis.regionalMap.wrangleData(stateSet);
+		vis.regionalBars.wrangleData(stateSet);
 	}
 
 
