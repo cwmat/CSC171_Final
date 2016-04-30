@@ -27,6 +27,9 @@ https://commons.wikimedia.org/wiki/Main_Page
   <link rel="stylesheet" href="css/bootstrap.min.css">
   <link rel="stylesheet" href="css/font-awesome.min.css">
   <link rel="stylesheet" href="css/d3.slider.css">
+  <!-- <link rel="stylesheet" href="css/leaflet.css"> -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/leaflet/1.0.0-rc.1/leaflet.css" />
+  <script src="https://cdn.jsdelivr.net/leaflet/1.0.0-rc.1/leaflet-src.js"></script>
   <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
@@ -48,9 +51,12 @@ https://commons.wikimedia.org/wiki/Main_Page
   </nav>
 
   <!-- Header -->
-  <!-- <header class="header">
-    <img src="" alt="" class="hero-image img-responsive">
-  </header> -->
+  <header class="header">
+    <!-- <img src="img/mosquito.jpg" alt="Mosquito biting a human hand" class="hero-image img-responsive"> -->
+    <div id="hero-map">
+
+    </div>
+  </header>
 
   <!-- Main Content	-->
   <div class="container">
@@ -252,11 +258,16 @@ https://commons.wikimedia.org/wiki/Main_Page
   <script src="js/queue.min.js"></script>
   <script src="js/topojson.js"></script>
   <script src="js/d3.min.js"></script>
+  <!-- <script src="js/leaflet.js"></script> -->
+  <!-- <script src="https://cdn.jsdelivr.net/leaflet.esri/2.0.0-beta.8/esri-leaflet.js"></script> -->
+  <!-- <script src="js/esrileaflet/EsriLeaflet.js"></script> -->
+  <script src="https://cdn.jsdelivr.net/leaflet.esri/2.0.0/esri-leaflet.js"></script>
   <script src="js/d3-legend.min.js"></script>
   <script src="js/d3.tip.js"></script>
   <script src="js/d3.slider.js"></script>
 
   <!-- Choropleth and second visualization -->
+  <script src="js/heroMap.js"></script>
   <script src="js/parallelCoords.js"></script>
   <script src="js/choroplethMap.js"></script>
   <script src="js/regionalMap.js"></script>

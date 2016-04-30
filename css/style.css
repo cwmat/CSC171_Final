@@ -51,10 +51,16 @@ h2 {
   margin-top: 3em;
 }
 
+.leaflet-popup-pane, .leaflet-control {
+  display: none;
+}
 
 
-
-
+#hero-map {
+  width:auto;
+  height: 350px;
+  background: black;
+}
 
 .vis {
   margin-top: 100px;

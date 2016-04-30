@@ -23,7 +23,8 @@ var colorScale = d3.scale.category20();
 var choroplethMap,
 		parallelCoords,
 		regionalMap,
-		regionalBars;
+		regionalBars,
+		heroMap;
 
 
 // Start application by loading the data
@@ -100,4 +101,5 @@ function createVis() {
 	regionalMap = new RegionalMap("regional-map", parallelCoordsData, usGeometry);
 	regionalBars = new RegionalBars("regional-bars", parallelCoordsData);
 	parallelCoords = new ParallelCoords("parallel-coords", parallelCoordsData, regionalMap, regionalBars);
+	heroMap = new HeroMap("hero-map");
 }
