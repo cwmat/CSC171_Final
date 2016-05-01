@@ -13,20 +13,9 @@ d3.json('data/caiso_data.json', function(error, data) {
 
     if(error) throw error;
 
-    data.forEach(function(d) {
-        var hourlyData = {};
-        for(var hour in d.hours) {
-            hourlyData[hour] = +d.hours[hour];
-        }
-        d.hours = hourlyData;
-    });
+    var cleaned = cleanCaisoData(data);
 
-    // N.B. 2011-06-30 has bad data - "connection to server lost"!
-    data = data.filter(function(d) {
-       return d.date != '2011-06-30';
-    });
-
-    //createCaiso(data);
+    createCaiso(cleaned);
 });
 
 d3.csv('data/projected_capacity.csv', function(error, data) {
@@ -61,6 +50,7 @@ d3.csv('data/projected_capacity.csv', function(error, data) {
 
 
 function createCaiso(data) {
+    // Instantiate a new plot of CAISO data.
     caiso = new Caiso('caiso', data);
     // Instantiate a new brush.
     brush = new CaisoBrush('caiso-brush', caiso.getData(), caiso.getWidth());
@@ -73,25 +63,61 @@ function brushed() {
     caiso.filterByDates(caiso.getData(), valuesForFilter[0], valuesForFilter[1]);
 }
 
+function cleanCaisoData(data) {
+    data.forEach(function(d) {
+        var hourlyData = {};
+        for(var hour in d.hours) {
+            hourlyData[hour] = +d.hours[hour];
+        }
+        d.hours = hourlyData;
+    });
+
+    // N.B. 2011-06-30 has bad data - "connection to server lost"!
+    data = data.filter(function(d) {
+        return d.date != '2011-06-30';
+    });
+
+    return data;
+}
+
 function createCapacityPlot(data) {
+    // Create a new projected capacity plot.
     capacityPlot = new CapacityPlot('projected-capacity', data);
+    // Create a new projected capacity plot legend.
     capacityLegend = new Legend('projected-capacity-legend');
 }
 
-// Some jQuery stuff to power the viz controls
+// Some jQuery stuff to power the Caiso viz controls
 $(document).ready(function() {
+    // Make hour select options
     $('.hour-select').each(function() {
         for(var i = 1; i < 25; i++) {
             $(this).append($('<option>').attr('value', i).text(i));
         }
     });
-
+    // Start with hour1 at 1 and hour2 at 24
     $('#hour2 option:last-child').prop('selected', true);
 
+    /**
+     * Reset functionality. Due to the large number of in-memory data structures, it's cleanest to
+     * delete the Caiso and Brush objects from the window, remove the DOM elements from their
+     * containers, and re-create the visualization.
+     */
     $('#caiso-controls button').click(function() {
-        console.log('clicked!');
-        caiso.reset();
-        brush.reset();
+        if(typeof window.caiso !== 'undefined' && typeof window.brush !== 'undefined') {
+            $('#caiso svg, #caiso-brush svg').remove();
+            delete window.caiso;
+            delete window.brush;
+            // Re-create the viz
+            d3.json('data/caiso_data.json', function(error, data) {
+
+                if(error) throw error;
+
+                var cleaned = cleanCaisoData(data);
+
+                createCaiso(cleaned);
+            });
+        }
         $('#hour1 option:first-child').prop('selected', true);
         $('#hour2 option:last-child').prop('selected', true);
     });

@@ -2,6 +2,13 @@
  * Created by Max DeCurtins on 4/29/2016.
  */
 
+/**
+ * Instantiate a new Projected Capacity by State plot.
+ *
+ * @param _parentElement    The element in which this visualization will reside.
+ * @param _data     The data for this visualization.
+ * @constructor
+ */
 CapacityPlot = function(_parentElement, _data) {
 
     this.parentElement = _parentElement;
@@ -16,6 +23,13 @@ CapacityPlot = function(_parentElement, _data) {
     this.initVis();
 };
 
+
+/**
+ * Format the data for this visualization.
+ *
+ * @param data  An array of objects containing flat properties.
+ * @returns {*} An array of data, keyed by year.
+ */
 CapacityPlot.prototype.formatData = function(data) {
 
     var entries = [];
@@ -40,6 +54,10 @@ CapacityPlot.prototype.formatData = function(data) {
 
 };
 
+
+/**
+ * Initialize this visualization.
+ */
 CapacityPlot.prototype.initVis = function() {
 
     var vis = this;
@@ -57,6 +75,10 @@ CapacityPlot.prototype.initVis = function() {
     vis.updateVis();
 };
 
+
+/**
+ * Update this visualization.
+ */
 CapacityPlot.prototype.updateVis = function() {
 
     var vis = this;
@@ -148,18 +170,19 @@ CapacityPlot.prototype.updateVis = function() {
     columnLabels.enter()
         .append('text')
         .attr({
-            y: vis.margin.top / 2,
+            y: 0,
             'text-anchor': 'middle',
             class: 'column-label'
         })
         .text(function(d) {
             return d.key;
-        });
+        })
+        .style('font-weight', 'bold');
 
     columnLabels.exit().transition().remove();
 
     columnLabels.transition().duration(1000).attr('x', function(d, i) {
-        return (130 + (1.5 * i * 50));
+        return (130 + (1.5 * i * 50) + i);
     });
 
     vis.attachEventListeners();
@@ -167,6 +190,10 @@ CapacityPlot.prototype.updateVis = function() {
 
 };
 
+
+/**
+ * Creates and appends an SVG element to this visualization.
+ */
 CapacityPlot.prototype.appendSVG = function() {
 
     var vis = this;
@@ -191,6 +218,10 @@ CapacityPlot.prototype.appendSVG = function() {
         .attr('transform', 'translate(' + vis.margin.left + ',' + vis.margin.top + ')');
 };
 
+
+/**
+ * Attaches event listeners to this visualization.
+ */
 CapacityPlot.prototype.attachEventListeners = function() {
 
     var vis = this;
@@ -215,6 +246,10 @@ CapacityPlot.prototype.attachEventListeners = function() {
     });
 };
 
+
+/**
+ * Filters this visualization's data by years checked and then updates the visualization.
+ */
 CapacityPlot.prototype.filterData = function() {
 
     var vis = this;
@@ -240,6 +275,12 @@ CapacityPlot.prototype.filterData = function() {
 
 };
 
+
+/**
+ * Returns an array of state abbreviations pulled from this visualization's data.
+ *
+ * @returns {Array.<T>|*}
+ */
 CapacityPlot.prototype.getStates = function() {
 
     var vis = this;
@@ -257,6 +298,10 @@ CapacityPlot.prototype.getStates = function() {
     return states.values().sort();
 };
 
+
+/**
+ * Update and call the HTML that will appear in the tooltip.
+ */
 CapacityPlot.prototype.makeTooltip = function() {
 
     var vis = this;

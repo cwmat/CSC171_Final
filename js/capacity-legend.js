@@ -2,6 +2,14 @@
  * Created by Max DeCurtins on 4/26/2016.
  */
 
+/**
+ * Instantiate a new legend. Since it is tailored specifically to the projected capacity by state plot,
+ * and the color palette's domain and range do not change, the legend does not receive data from an
+ * instance of the projected capacity plot.
+ *
+ * @param _parentElement    The element in which this legend will reside.
+ * @constructor
+ */
 Legend = function(_parentElement) {
 
     this.parentElement = _parentElement;
@@ -11,6 +19,10 @@ Legend = function(_parentElement) {
     this.init();
 };
 
+
+/**
+ * Initialize this legend.
+ */
 Legend.prototype.init = function() {
 
     var legend = this;
@@ -21,7 +33,7 @@ Legend.prototype.init = function() {
         top: 20,
         right: 10,
         bottom: 20,
-        left: 10
+        left: 0
     };
 
     legend.width = 250 - legend.margin.left - legend.margin.right;

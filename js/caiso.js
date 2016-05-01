@@ -2,6 +2,13 @@
  * Created by Max DeCurtins on 4/14/2016.
  */
 
+/**
+ * Instantiate a new California Independent System Operator (CAISO) data visualization.
+ *
+ * @param _parentElement    The parent element in which this visualization instance should reside.
+ * @param _data     The data for this visualization.
+ * @constructor
+ */
 Caiso = function(_parentElement, _data) {
 
     this.parentElement = _parentElement;
@@ -11,6 +18,10 @@ Caiso = function(_parentElement, _data) {
     this.initVis();
 };
 
+
+/**
+ * Initialize the California Independent System Operator (CAISO) visualization.
+ */
 Caiso.prototype.initVis = function() {
 
     var vis = this;
@@ -72,61 +83,16 @@ Caiso.prototype.initVis = function() {
     // Initialize a line function for drawing paths.
     vis.line = d3.svg.line().interpolate('basis');
 
-
+    // Initialize a tooltip.
+    vis.tip = d3.tip().attr('class', 'd3-tip').offset([10, 30]);
 
     vis.updateVis();
 };
 
-Caiso.prototype.initBrush = function() {
 
-    var vis = this;
-    // Scale for brush
-    vis.dateScale = d3.time.scale().range([0, vis.width]);
-    // Axis for brush
-    vis.dateAxis = d3.svg.axis().scale(vis.dateScale).orient('bottom');
-
-    // Create the brush
-    vis.brush = d3.svg.brush().x(vis.dateScale).on('brush', vis.brushed);
-
-    // For brush
-    vis.context = vis.svg.append('g')
-        .attr({
-            transform: 'translate(0, ' + vis.brushMargin.top + ')',
-            class: 'context'
-        });
-
-    // Set the domain of the brush axis scale. It will always be the same.
-    vis.dateScale.domain(d3.extent(vis.formattedData, function(d) {
-        return new Date(d.key);
-    }));
-
-    vis.context.append('g')
-        .attr({
-            class: 'x-axis axis brush-axis',
-            transform: 'translate(0, ' + vis.brushHeight + ')'
-        }).call(vis.dateAxis);
-
-    vis.contextArea = d3.svg.area().interpolate('monotone')
-        .x(function(d) {
-            return vis.dateScale(new Date(d.key));
-        }).y0(vis.brushHeight).y1(0);
-
-    vis.context.append('path')
-        .attr({
-            class: 'area',
-            d: vis.contextArea
-        });
-
-    vis.context.append('g')
-        .attr('class', 'x brush')
-        .call(vis.brush)
-        .selectAll('rect')
-        .attr({
-            height: vis.brushHeight,
-            fill: '#E6E7E8'
-        });
-};
-
+/**
+ * Wrangle the data into the various data structures needed by this visualization.
+ */
 Caiso.prototype.wrangleData = function() {
 
     var vis = this;
@@ -167,16 +133,18 @@ Caiso.prototype.wrangleData = function() {
     });
 
     var allDates = dateMap.keys();
-    //console.log(allDates);
 
     vis.hourKeys = d3.keys(vis.data[0].hours);
     vis.hourKeys = vis.hourKeys.map(function(key) {
         return parseInt(key);
     });
 
-    console.log(vis.formattedData);
 };
 
+
+/**
+ * Update this visualization.
+ */
 Caiso.prototype.updateVis = function() {
 
     var vis = this;
@@ -207,21 +175,6 @@ Caiso.prototype.updateVis = function() {
             return vis.y(d.output);
         });
 
-    // With thanks to http://jsfiddle.net/YHW6H/1/
-    /*vis.dates = vis.svg.selectAll('.daily')
-        .data(dataToUse, function(d) {
-            return d.key;
-        })
-        .enter().append('g')
-        .attr('class', 'daily');
-
-    vis.dates.append('path')
-        .attr({
-            class: 'line',
-            d: function(d) {
-                return vis.line(d.values);
-            }
-        });*/
 
     // Path handling based on
     // http://jonsadka.com/blog/how-to-create-live-updating-and-flexible-d3-line-charts-using-pseudo-data/
@@ -231,6 +184,7 @@ Caiso.prototype.updateVis = function() {
         .duration(500)
         .attr('d', function(d) { return vis.line(d.values); });
 
+    // Update the lines. When there are fewer of them, the stroke-width can be a little bigger.
     vis.lines.enter()
         .append('path')
         .attr({
@@ -255,6 +209,8 @@ Caiso.prototype.updateVis = function() {
 
     vis.lines.exit().remove();
 
+    vis.makeTooltip();
+
     vis.attachEventListeners();
 
     // Call the axes
@@ -262,16 +218,22 @@ Caiso.prototype.updateVis = function() {
     vis.svg.select('.y-axis').call(vis.yAxis);
 };
 
+
+/**
+ * Attach event listeners to this visualization.
+ */
 Caiso.prototype.attachEventListeners = function() {
 
     var vis = this;
 
     d3.selectAll('.line').on({
-        mouseover: function() {
+        mouseover: function(d) {
             d3.select(this).style('opacity', 1.0);
+            vis.tip.show(d);
         },
-        mouseleave: function() {
+        mouseleave: function(d) {
             d3.select(this).style('opacity', 0.05);
+            vis.tip.hide(d);
         }
     });
 
@@ -284,7 +246,7 @@ Caiso.prototype.attachEventListeners = function() {
                 } else if (hour1 == hour2) {
                     alert('No range selected.');
                 } else {
-                    vis.filterData(hour1, hour2);
+                    vis.filterByHours(hour1, hour2);
                 }
             });
         });
@@ -292,11 +254,45 @@ Caiso.prototype.attachEventListeners = function() {
 
 };
 
-Caiso.prototype.filterData = function(input1, input2) {
+
+/**
+ * Returns an object containing summary statistics for the hourly data passed to this method.
+ *
+ * @param hours An array of objects of length 24, each with an output property.
+ * @returns {{}}    An object containing average, minimum, and maximum wind output KV pairs.
+ */
+Caiso.prototype.dailyStats = function(hours) {
+
+    var stats = {};
+
+    var total = 0;
+    var outputs = [];
+    hours.forEach(function(obj) {
+        total += obj.output;
+        outputs.push(obj.output);
+    });
+
+    stats['avgOutput'] = Math.round(total / outputs.length);
+    stats['maxOutput'] = d3.max(outputs);
+    stats['minOutput'] = d3.min(outputs);
+
+    return stats;
+};
+
+
+/**
+ * Filters this visualization's formattedData or filteredData by two hour values.
+ *
+ * @param input1    An int between 1 and 24, representing hour 1.
+ * @param input2    An int between 1 and 24, representing hour 2.
+ */
+Caiso.prototype.filterByHours = function(input1, input2) {
     var vis = this;
 
     var dataToUse;
+    // First, a sanity check.
     if(!isNaN(input1) && !isNaN(input2)) {
+        // Determine if there is previously filtered data.
         if(typeof vis.filteredData === 'undefined') {
             dataToUse = vis.formattedData;
             vis.filteredData = [];
@@ -327,15 +323,19 @@ Caiso.prototype.filterData = function(input1, input2) {
         console.log('Numeric inputs expected. Inputs passed: ' + input1 + ', ' + input2);
     }
 
-
-    console.log(vis.filteredData.length);
 };
 
+
+/**
+ * Obtains a subset of the data passed, filtered by dates falling between date1 and date2. This
+ * subset is then assigned to the filteredData property of this visualization.
+ *
+ * @param data  An array of objects with obj.key = date and obj.values = array of hourly data
+ * @param date1 A string representing a date.
+ * @param date2 A string representing a date.
+ */
 Caiso.prototype.filterByDates = function(data, date1, date2) {
     var vis = this;
-
-    //console.log('Date 1: ' + date1.valueOf());
-    //console.log('Date 2: ' + date2.valueOf());
 
     var filtered = data.filter(function(d) {
         var current = new Date(d.key).valueOf();
@@ -343,11 +343,17 @@ Caiso.prototype.filterByDates = function(data, date1, date2) {
         return (current >= date1.valueOf()) && (current <= date2.valueOf());
     });
 
-    console.log(filtered.length);
     vis.filteredData = filtered;
     vis.updateVis();
 };
 
+
+/**
+ * Returns the range of hours represented in the data passed to this method.
+ *
+ * @param data  An array of objects with obj.key = date and obj.values = array of hourly data
+ * @returns {Array} An array of hours as numbers
+ */
 Caiso.prototype.getHourRange = function(data) {
 
     var vis = this;
@@ -366,6 +372,12 @@ Caiso.prototype.getHourRange = function(data) {
 };
 
 
+/**
+ * Returns the unfiltered, formatted data of this visualization. Should be an array unless the data
+ * is formatted otherwise.
+ *
+ * @returns {*}
+ */
 Caiso.prototype.getData = function() {
     var vis = this;
     var data;
@@ -375,14 +387,43 @@ Caiso.prototype.getData = function() {
     return data;
 };
 
+
+/**
+ * Returns the width of the SVG element of this visualization.
+ *
+ * @returns {number|*}
+ */
 Caiso.prototype.getWidth = function() {
     var vis = this;
     return vis.width;
 };
 
-Caiso.prototype.reset = function() {
+
+/**
+ * Defines and calls the HTML to appear inside the tooltip.
+ */
+Caiso.prototype.makeTooltip = function() {
+
     var vis = this;
-    vis.filteredData = undefined;
-    vis.updateVis();
+
+    // Update and call the tooltip
+    vis.tip.html(function(d) {
+
+        var stats = vis.dailyStats(d.values);
+        var date = new Date(d.key);
+
+        var dateString = (date.getMonth() + 1) + '/' + (date.getDay() + 1) + '/' + date.getFullYear();
+
+        var html = '<p class="tooltip-title">Wind stats for: ' + dateString + '</p>';
+        html += '<p>Average output: ' + stats.avgOutput + ' MW</p>';
+        html += '<p>Minimum output: ' + stats.minOutput + ' MW</p>';
+        html += '<p>Maximum output: ' + stats.maxOutput + ' MW</p>';
+
+        return html;
+    });
+
+    vis.svg.call(vis.tip);
 };
+
+
 

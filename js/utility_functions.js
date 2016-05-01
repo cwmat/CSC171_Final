@@ -6,9 +6,16 @@ var formatYear = d3.time.format('%Y');
 
 var formatDate = d3.time.format('%Y-%m-%d');
 
-// Function is from
-// http://stackoverflow.com/questions/1885557/simplest-code-for-array-intersection-in-javascript
-// JS arrays should really have union/intersection/difference built-in...
+/**
+ * Function is from
+ * http://stackoverflow.com/questions/1885557/simplest-code-for-array-intersection-in-javascript
+ * JS arrays should really have union/intersection/difference built-in...
+ *
+ *
+ * @param a An array
+ * @param b An array
+ * @returns {Array} The intersection of a and b.
+ */
 function intersection(a, b) {
 
     var i = 0, j = 0, result = [];
@@ -29,7 +36,9 @@ function intersection(a, b) {
 /**
  * Use this function to get a full state name from an abbreviation, or
  * vice versa.
+ *
  * @param state A state abbreviation or a state name.
+ * @return {String} Either a state name or its abbreviation.
  */
 function mapState(state) {
     var valueToReturn;
