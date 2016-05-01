@@ -10,10 +10,14 @@
 
 /**
   * Choropleth Map - Object constructor function
-  * @param _parentElement
+  * @param parentElement
   *     -- the HTML element in which to draw the visualization
-  * @param _data
+	* @param legendElement
+	*     -- the HTML element in which to draw the legend
+  * @param data
   *     -- the input dataset
+	* @param mapData
+	*     -- Topojson US state geometry
   *
   */
 ChoroplethMap = function(parentElement, legendElement, data, mapData){

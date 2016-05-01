@@ -1,25 +1,29 @@
+'use strict;'
 /**
 	* Adoption of Wind Energy Development in the US
 	* CSC 171 - Studio 2 Group 1
 	* Final Project
 	* 	Charles Mateer
-	* 	Max DeCurtins
 	*
 	*/
 
 
 /**
   * Parallel Coordinates - Object constructor function
-  * @param _parentElement
+  * @param parentElement
   *     -- the HTML element in which to draw the visualization
-  * @param _data
+  * @param data
   *     -- the input dataset
+	* @param regionalMap
+	*     -- Mini map object
+	* @param regionalBars
+	*     -- Bar chart object
   *
   */
 ParallelCoords = function(parentElement, data, regionalMap, regionalBars){
 	this.parentElement = parentElement;
   this.data = data;
-  this.displayData = this.data; // see data wrangling
+  this.displayData = this.data;
 	this.windGenerationFieldNames = ["state", "region", "installed_capcity_mw", "state_rank", "capacity_under_construction_mw", "projects_online", "num_turbines"]
 	this.economicFieldNames = ["state", "region", "in_state_energy_production_2014", "us_homes_powered", "facilities", "project_invest", "land_lease_total_million"]
 	this.environmentalFieldNames = ["state", "region", "water_savings_gallons", "bottles_water_saved", "co2_avoided_metric_tons", "cars_worth"]
@@ -37,15 +41,10 @@ ParallelCoords = function(parentElement, data, regionalMap, regionalBars){
 		d.co2_avoided_metric_tons = d.co2_avoided_metric_tons / mill;
 	});
 
-  // DEBUG RAW DATA
-  // console.log(this.data);
-
 	// Initial filter
 	this.dropColumns(this.drop);
-	// this.displayData = this.data;
 
-	// console.log(this.displayData);
-
+	// Initialize vis
   this.initVis();
 }
 
@@ -61,7 +60,6 @@ ParallelCoords.prototype.initVis = function(){
 	vis.margin = {top: 30, right: 10, bottom: 10, left: 100};
 
 	// Vis width/height
-	//vis.width = 1200 - vis.margin.left - vis.margin.right,
 	vis.width = 945 - vis.margin.left - vis.margin.right,
   vis.height = 500 - vis.margin.top - vis.margin.bottom;
 
@@ -86,8 +84,6 @@ ParallelCoords.prototype.initVis = function(){
 				.domain(d3.extent(vis.displayData, function(p) { return +p[d]; }))
 				.range([vis.height, 0]));
 	}));
-
-	// console.log(vis.y);
 
 	vis.tip = d3.tip()
 							.attr('class', 'd3-tip')
@@ -116,12 +112,7 @@ ParallelCoords.prototype.initVis = function(){
     .enter().append("path")
       .attr("d", path)
 			.attr("class", function(d) { return d.region; })
-			// .on("mouseenter", vis.tip.show)
-			// .on("mouseleave", vis.tip.hide)
-			// .on("mouseenter", function(d) { vis.updateRegionalMap(d.state); })
-			// .on("mouseleave", vis.clearRegionalMap())
-			.on("mouseenter", function(d) { vis.populateTable(d); })
-			;
+			.on("mouseenter", function(d) { vis.populateTable(d); });
 
 	// Add a group element for each dimension.
   vis.g = vis.svg.selectAll(".dimension")
@@ -169,10 +160,9 @@ ParallelCoords.prototype.initVis = function(){
 	      .each(function(d) {
 	        d3.select(this).call(vis.y[d].brush = d3.svg.brush().y(vis.y[d]).on("brushstart", brushstart).on("brush", brush));
 	      })
-	    .selectAll("rect")
-	      .attr("x", -8)
-	      .attr("width", 16);
-	// });
+		    .selectAll("rect")
+		      .attr("x", -8)
+		      .attr("width", 16);
 
 	function position(d) {
 	  vis.v = vis.dragging[d];
@@ -185,7 +175,6 @@ ParallelCoords.prototype.initVis = function(){
 
 	// Returns the path for a given data point.
 	function path(d) {
-		// console.log(vis.dimensions);
 	  return line(vis.dimensions.map(function(p) { return [position(p), vis.y[p](d[p])]; }));
 	}
 
@@ -201,39 +190,17 @@ ParallelCoords.prototype.initVis = function(){
 	      vis.extents = vis.actives.map(function(p) { return vis.y[p].brush.extent(); });
 	  vis.foreground.style("display", function(d) {
 	    return vis.actives.every(function(p, i) {
-				// console.log(vis.actives);
-	      // return vis.extents[i][0] <= d[p] && d[p] <= vis.extents[i][1];
 				if (vis.extents[i][0] <= d[p] && d[p] <= vis.extents[i][1]) {
-					// console.log(d);
 					stateSet.add(d.state);
 					return true;
 				}
 	    }) ? null : "none";
 	  });
-		// console.log(stateSet);
-		// console.log(vis.foreground[0][0].__data__);
+		// Call wrnagle data on both linked vis (mini map and barchart).  Pass in set of brushed states.
 		vis.regionalMap.wrangleData(stateSet);
 		vis.regionalBars.wrangleData(stateSet);
 	}
 
-
-	// Scales and axes
-  // vis.x = d3.time.scale()
-	//   	.range([0, vis.width])
-	//   	.domain(d3.extent(vis.displayData, function(d) { return d.Year; }));
-	//
-	// vis.y = d3.scale.linear()
-	// 		.range([vis.height, 0])
-	// 		.domain([0, d3.max(vis.displayData, function(d) { return d.Expenditures; })]);
-	//
-	// vis.xAxis = d3.svg.axis()
-	// 	  .scale(vis.x)
-	// 	  .orient("bottom");
-
-
-	// SVG area path generator
-
-  // TO-DO: (Filter, aggregate, modify data)
   vis.wrangleData();
 }
 
@@ -297,21 +264,6 @@ ParallelCoords.prototype.dropColumns = function(columnsToDrop) {
 	});
 }
 
-ParallelCoords.prototype.updateRegionalMap = function(state) {
-	var vis = this;
-
-	var stateKey = state.toLowerCase();
-
-	vis.regionalMap.highlightState(stateKey);
-
-
-}
-
-ParallelCoords.prototype.clearRegionalMap = function() {
-	var vis = this;
-	vis.regionalMap.highlightState("all");
-}
-
 ParallelCoords.prototype.populateTable = function(data) {
 	var vis = this;
 	var format = d3.format(",d");
@@ -333,75 +285,7 @@ ParallelCoords.prototype.populateTable = function(data) {
 	$("#coords-table-co2").html(dec(data.co2_avoided_metric_tons));
 }
 
-// /**
-//   * Get states from brush
-//   *
-//   */
-// ParallelCoords.prototype.brushStates = function() {
-//   var vis = this;
-//
-// 	var stateSet = new Set();
-//
-// 	vis.foreground.forEach(function(d) {
-// 		d.forEach(function(i) {
-// 			// console.log(i.__data__);
-// 			stateSet.add(i.__data__.state);
-// 		});
-// 	});
-//
-// 	// console.log(stateSet);
-//
-// }
-
 // Stack Exchange - Tuan: http://stackoverflow.com/questions/196972/convert-string-to-title-case-with-javascript
 String.prototype.toProperCase = function () {
     return this.replace(/\w\S*/g, function(txt){return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase();});
 };
-
-
-
-
-
-
-
-
-// ParallelCoords.prototype.position = function(d) {
-// 	var vis = this;
-//
-// 	var v = vis.dragging[d];
-// 	return v == null ? vis.x(d) : v;
-// }
-//
-// ParallelCoords.prototype.transition = function(g) {
-// 	var vis = this;
-//
-// 	return vis.g.transition().duration(500);
-// }
-//
-// // Returns the path for a given data point.
-// ParallelCoords.prototype.path = function(d) {
-// 	var vis = this;
-//
-// 	console.log(vis.dimensions);
-//
-// 	return vis.line(vis.dimensions.map(function(p) { return [vis.position(p), vis.y[p](d[p])]; }));
-// }
-//
-// ParallelCoords.prototype.brushstart = function() {
-// 	var vis = this;
-//
-// 	d3.event.sourceEvent.stopPropagation();
-// }
-//
-// // Handles a brush event, toggling the display of foreground lines.
-// ParallelCoords.prototype.brush = function() {
-// 	var vis = this;
-//
-// 	vis.actives = vis.dimensions.filter(function(p) { return !vis.y[p].brush.empty(); }),
-// 			vis.extents = vis.actives.map(function(p) { return vis.y[p].brush.extent(); });
-// 	vis.foreground.style("display", function(d) {
-// 		return vis.actives.every(function(p, i) {
-// 			return vis.extents[i][0] <= d[p] && d[p] <= extents[i][1];
-// 		}) ? null : "none";
-// 	});
-// }

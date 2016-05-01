@@ -1,4 +1,4 @@
-
+'use strict;'
 /*
  *  Hero Map - Object constructor function
  *  @param parentElement   -- HTML element in which to draw the visualization

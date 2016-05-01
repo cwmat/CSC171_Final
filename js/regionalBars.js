@@ -1,3 +1,4 @@
+'use strict;'
 /**
 	* Adoption of Wind Energy Development in the US
 	* CSC 171 - Studio 2 Group 1
@@ -9,9 +10,9 @@
 
 /**
   * Regional Map - Object constructor function
-  * @param _parentElement
+  * @param parentElement
   *     -- the HTML element in which to draw the visualization
-  * @param _data
+  * @param data
   *     -- the input dataset
   *
   */
@@ -128,28 +129,6 @@ RegionalBars.prototype.initVis = function(){
     vis.bars = vis.svg.selectAll("rect")
       .data(vis.displayData);
 
-		// // Change axis text
-		// $(document).ready(function() {
-		// 	$(".tick text:contains('west')").html("W");
-		// 	$(".tick text:contains('southwest')").html("SW");
-		// 	$(".tick text:contains('midwest')").html("MW");
-		// 	$(".tick text:contains('southeast')").html("SE");
-		// 	$(".tick text:contains('northeast')").html("NE");
-		// });
-
-    // Udpate
-    // vis.bars.on("mouseover", barTip.show).on("mouseleave", barTip.hide)
-    // .transition()
-    // .duration(1000)
-    // .attr({
-    //   x: function(d) { return x(d.Source); },
-    //   y: function(d) { return y(d[currentBarSelection]); },
-    //   height: function(d) { return height - y(d[currentBarSelection]); },
-    //   width: x.rangeBand(),
-    //   class: function(d) { return "bar " + currentBarSelection; },
-    // });
-
-
     vis.bars.on("mouseover", vis.tip.show).on("mouseleave", vis.tip.hide);
 
     // Enter data
@@ -161,10 +140,7 @@ RegionalBars.prototype.initVis = function(){
         height: function(d) { return vis.height - vis.y(d.total_capacity); },
         width: vis.x.rangeBand(),
         class: function(d) { return "bar region-" + d.name; },
-      })
-      // .on("mouseover", barTip.show)
-      // .on("mouseleave", barTip.hide);
-      ;
+      });
 
     // Remove old data
     vis.bars.exit().remove();
@@ -179,10 +155,6 @@ RegionalBars.prototype.initVis = function(){
         .duration(2000)
         .call(vis.xAxis);
 
-
-
-
-  // TODO: (Filter, aggregate, modify data)
   vis.wrangleData();
 }
 
@@ -193,13 +165,6 @@ RegionalBars.prototype.initVis = function(){
 RegionalBars.prototype.wrangleData = function(states) {
   var vis = this;
 
-	// if (states) {
-	// 	vis.displayData.forEach(function(d) {
-	// 		if (true) {
-	// 			console.log(d);
-	// 		}
-	// 	});
-	// }
 	if (states) {
 		if (states.size < 1) {
 			vis.data.forEach(function(d) {
@@ -227,9 +192,6 @@ RegionalBars.prototype.wrangleData = function(states) {
 		}
 	}
 	console.log(vis.displayData);
-
-  // Wrangle
-
 
   // Update the visualization
   vis.updateVis();
@@ -266,6 +228,4 @@ RegionalBars.prototype.updateVis = function() {
 				.transition()
 				.duration(1000)
 				.call(vis.xAxis);
-
-
 }

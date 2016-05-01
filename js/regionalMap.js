@@ -1,3 +1,4 @@
+'use strict;'
 /**
 	* Adoption of Wind Energy Development in the US
 	* CSC 171 - Studio 2 Group 1
@@ -9,10 +10,12 @@
 
 /**
   * Regional Map - Object constructor function
-  * @param _parentElement
+  * @param parentElement
   *     -- the HTML element in which to draw the visualization
-  * @param _data
+  * @param data
   *     -- the input dataset
+	* @param mapData
+	*     -- Map geometry
   *
   */
 RegionalMap = function(parentElement, data, mapData){
@@ -21,7 +24,7 @@ RegionalMap = function(parentElement, data, mapData){
 	this.parentElement = parentElement;
 	this.mapData = mapData;
   this.data = data;
-  this.displayData = []; // see data wrangling
+  this.displayData = [];
 	this.dataExtent = [];
 	this.year = 1995;
   this.highlightedState = new Set();
@@ -33,35 +36,6 @@ RegionalMap = function(parentElement, data, mapData){
   // Make data map for regional states
   this.regionalStates = {};
 
-  // vis.data.forEach(function(d) {
-  //   // console.log(d);
-  //   vis.regionalStates[d.state] = d.region;
-  // });
-
-
-	// this.removeStates = ["PR", "HI", "AK"];
-
-  // DEBUG RAW DATA
-  // console.log(this.data);
-
-	// Initial sort
-	// this.displayData = this.data.filter(function(d) {
-	// 	if (d.on_year == 2014) {
-	// 		return d;
-	// 	}
-	// });
-
-	// this.aggregateOnYear(this.year);
-
-	// this.buildDataMap();
-
-	// console.log(this.displayData);
-	// console.log(this.dataMap);
-	// console.log(this.dataMap.CA);
-
-	// setTimeout(function() {
-	// 	vis.initVis();
-	// }, 10000);
   this.initVis();
 }
 
@@ -86,12 +60,9 @@ RegionalMap.prototype.initVis = function(){
 	    .attr("transform", "translate(" + vis.margin.left + "," + vis.margin.top + ")");
 
 	// Create quantize color scale
-	// vis.quantize = d3.scale.quantize();
   vis.data.forEach(function(d) {
-    // console.log(d);
     vis.regionalStates[d.state] = d.region;
   });
-  // console.log(vis.regionalStates);
 
 	// Map projection and path generator
 	vis.proj = d3.geo.albersUsa()
@@ -112,7 +83,6 @@ RegionalMap.prototype.initVis = function(){
         })
 				.attr("d", vis.path);
 
-  // TODO: (Filter, aggregate, modify data)
   vis.wrangleData();
 }
 
@@ -127,14 +97,7 @@ RegionalMap.prototype.wrangleData = function(states) {
 	if (states) {
 		vis.highlightedState = states;
 	}
-	// console.log(vis.highlightedState);
 
-
-
-  // Wrangle
-	// vis.aggregateOnYear(vis.year);
-
-  // Update the visualization
   vis.updateVis();
 }
 
@@ -145,26 +108,6 @@ RegionalMap.prototype.wrangleData = function(states) {
 RegionalMap.prototype.updateVis = function() {
   var vis = this;
 
-	// Update us boundaries
-// 	vis.svg.selectAll(".regional")
-//     .attr("class", function(d) {
-//       if (vis.highlightedState == "all") {
-//         var stateName = d.properties.name;
-//         var key = stateName.toLowerCase();
-//         return "regional state region-" + vis.regionalStates[key];
-//       } else if (vis.highlightedState == d.properties.name.toLowerCase()) {
-//         console.log("madeit");
-//         var stateName = d.properties.name;
-//         var key = stateName.toLowerCase();
-//         return "regional state region-" + vis.regionalStates[key];
-//       } else {
-//         console.log(vis.highlightedState);
-//         console.log(d.properties.name);
-//         return "regional grey-state";
-//       }
-//     });
-// }
-
 	vis.svg.selectAll(".regional")
     .attr("class", function(d) {
       if (vis.highlightedState && vis.highlightedState.has(d.properties.name.toLowerCase())) {
@@ -172,31 +115,18 @@ RegionalMap.prototype.updateVis = function() {
         var key = stateName.toLowerCase();
         return "regional state region-" + vis.regionalStates[key];
       } else if (vis.highlightedState.size < 1) {
-        // console.log("madeit");
         var stateName = d.properties.name;
         var key = stateName.toLowerCase();
         return "regional state region-" + vis.regionalStates[key];
       } else {
-        // console.log(vis.highlightedState);
-        // console.log(d.properties.name);
         return "regional grey-state";
       }
     });
-		// console.log(vis.highlightedState);
 }
 
 
 RegionalMap.prototype.highlightState = function(states) {
 	var vis = this;
 
-	// var stateKey = state.toLowerCase();
-	//
-	// vis.highlightedState = stateKey;
-	//
-  // // console.log(stateKey);
-
-
   vis.updateVis();
-
-
 }
