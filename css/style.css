@@ -59,6 +59,36 @@ h2 {
   display: none;
 }
 
+.orange-text {
+  color: orange;
+  font-weight: bold;;
+}
+
+.purple-text {
+  color: purple;
+  font-weight: bold;;
+}
+
+.teal-text {
+  color: rgb(9, 241, 249);
+  font-weight: bold;;
+}
+
+.yellow-text {
+  color: yellow;
+  font-weight: bold;;
+}
+
+.green-text {
+  color: rgb(114, 235, 18);
+  font-weight: bold;;
+}
+
+.red-text {
+  color: red;
+  font-weight: bold;;
+}
+
 
 #hero-map {
   width:auto;
@@ -76,6 +106,10 @@ h2 {
 
 .section-para {
   text-align: left;
+}
+
+.section-image {
+  padding: 50px 0;
 }
 
 svg {
