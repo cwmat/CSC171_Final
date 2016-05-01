@@ -27,7 +27,6 @@ https://commons.wikimedia.org/wiki/Main_Page
   <link rel="stylesheet" href="css/bootstrap.min.css">
   <link rel="stylesheet" href="css/font-awesome.min.css">
   <link rel="stylesheet" href="css/d3.slider.css">
-  <!-- <link rel="stylesheet" href="css/leaflet.css"> -->
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/leaflet/1.0.0-rc.1/leaflet.css" />
   <script src="https://cdn.jsdelivr.net/leaflet/1.0.0-rc.1/leaflet-src.js"></script>
   <link rel="stylesheet" href="css/style.css">
@@ -64,7 +63,7 @@ https://commons.wikimedia.org/wiki/Main_Page
     <div class="row">
       <div class="col-lg-12">
         <h1 class="page-header">Adoption of Wind Energy in the U.S.</h1>
-        <p>
+        <p class="section-para">
           Wind power captures the natural wind in our atmosphere and converts it into mechanical energy and ultimately electricity. Wind energy has been around since recorded history, starting with use in sail boats as early as 5,000 B.C. and wind mills for grinding grain in the 1800s.  It wasn’t until 1890 that wind energy began being experimented with as a means to produce electricity and not until 1970 that commercial wind energy was explored as a viable option.   The combination of increasing prices for fossil fuels and  the rise of environmental movements and subsequently federal environmental policies (Clean Air Act, Clean Water Act, National Environmental Policy Act) sparked an interest in renewable energy.  That is to say, energy that is sustainable and has limited negative effects on the natural environment.  Today, wind energy is a rapidly growing industry, largely due to federal policy and the need to find renewable sources of energy to supplement fossil fuels in an environment of ever growing population.  The following visualizations show past, current, and projected trends for wind energy in the United States.
         </p>
       </div>
@@ -95,7 +94,9 @@ https://commons.wikimedia.org/wiki/Main_Page
           </p>
       </div>
       <div class="col-md-8 col-sm-12">
-        <img class="img-responsive img-portfolio img-hover section-image" src="img/potential.jpg" alt="Wind farm in an agricultural landscape.">
+        <a href="http://www.nrel.gov/gis/wind.html" target="_blank">
+          <img class="img-responsive img-portfolio img-hover section-image" src="img/potential.jpg" alt="NREL wind potential maps.">
+        </a>
       </div>
     </div>
     <!-- /.row -->
@@ -147,7 +148,9 @@ https://commons.wikimedia.org/wiki/Main_Page
         <h1 class="page-header">Parallel Coordiantes Diagram Showing Wind Energy Statistics by State for 2014</h1>
       </div>
       <div class="col-md-8 col-sm-12">
-        <img class="img-responsive img-portfolio img-hover section-image" src="img/coords.jpg" alt="Pictures of wind energy based jobs and facilities.">
+        <a href="http://www.awea.org/Careers/content.aspx?ItemNumber=811" target="_blank">
+          <img class="img-responsive img-portfolio img-hover section-image" src="img/coords.jpg" alt="Pictures of wind energy based jobs and facilities.">
+        </a>
       </div>
       <div class="col-md-4 col-sm-6">
           <p class="section-para">
@@ -212,9 +215,9 @@ https://commons.wikimedia.org/wiki/Main_Page
         <div id="parallel-coords" class="vis"></div>
       </div>
       <div class="col-lg-1">
-        <!-- <h2>State Regions</h2> -->
+        <p class="regional-buffer">State Regions</p>
         <div id="regional-map" class="vis"></div>
-        <!-- <h2>Total Installed Capacity (mw) by Region</h2> -->
+        <p class="regional-buffer-short">Total Installed Capacity (MW) by Region</p>
         <div id="regional-bars" class="vis"></div>
       </div>
     </div>
@@ -302,9 +305,6 @@ https://commons.wikimedia.org/wiki/Main_Page
   <script src="js/queue.min.js"></script>
   <script src="js/topojson.js"></script>
   <script src="js/d3.min.js"></script>
-  <!-- <script src="js/leaflet.js"></script> -->
-  <!-- <script src="https://cdn.jsdelivr.net/leaflet.esri/2.0.0-beta.8/esri-leaflet.js"></script> -->
-  <!-- <script src="js/esrileaflet/EsriLeaflet.js"></script> -->
   <script src="https://cdn.jsdelivr.net/leaflet.esri/2.0.0/esri-leaflet.js"></script>
   <script src="js/d3-legend.min.js"></script>
   <script src="js/d3.tip.js"></script>

@@ -244,8 +244,6 @@ ParallelCoords.prototype.initVis = function(){
 ParallelCoords.prototype.wrangleData = function() {
   var vis = this;
 
-  // Wrangle
-
   // Update the visualization
   vis.updateVis();
 }
@@ -257,12 +255,27 @@ ParallelCoords.prototype.wrangleData = function() {
 ParallelCoords.prototype.updateVis = function() {
   var vis = this;
 
-  // Update domain
+	$(document).ready(function() {
+		// Update axis headers
+		$("text:contains(installed_capacity_mw)").html("Inst. Capacity");
+		$("text:contains(capacity_under_construction_mw)").html("Construction");
+		$("text:contains(num_turbines)").html("Turbines");
+		$("text:contains(projects_online)").html("Projects");
+		$("text:contains(in_state_energy_production_2014)").html("State Production");
+		$("text:contains(wind_jobs_2014)").html("Jobs");
+		$("text:contains(facilities)").html("Facilities");
+		$("text:contains(project_invest)").html("Investment");
+		$("text:contains(land_lease_total_million)").html("Land Lease");
+		$("text:contains(water_savings_gallons)").html("Water Savings");
+		$("text:contains(co2_avoided_metric_tons)").html("CO2 Avoided");
 
-  // Get the maximum of the multi-dimensional array or in other words, get the highest peak of the uppermost layer
-
-
-  // Call axis functions with the new domain
+		// Update axis for regions
+		$("text:contains(southwest)").html("SW");
+		$("text:contains(midwest)").html("MW");
+		$("text:contains(west)").html("W");
+		$("text:contains(southeast)").html("SE");
+		$("text:contains(northeast)").html("NE");
+	});
 
 }
 

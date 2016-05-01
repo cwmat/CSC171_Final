@@ -33,6 +33,26 @@ h2 {
   shape-rendering: crispEdges;
 }
 
+.section-image:hover {
+  min-width: 102%;
+}
+
+.regional-buffer {
+  min-width: 300px;
+  text-align: left;
+  font-weight: bold;
+  position: absolute;
+  padding-top: 60px;
+}
+
+.regional-buffer-short {
+  min-width: 300px;
+  text-align: left;
+  font-weight: bold;
+  position: absolute;
+  padding-top: 20px;
+}
+
 .browser text {
   text-anchor: end;
 }
