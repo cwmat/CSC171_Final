@@ -31,6 +31,11 @@ h2 {
   shape-rendering: crispEdges;
 }
 
+.axis text {
+  text-shadow: 0 1px 0 #fff, 1px 0 0 #fff, 0 -1px 0 #fff, -1px 0 0 #fff;
+  cursor: move;
+}
+
 .section-image:hover {
   min-width: 102%;
 }
@@ -130,39 +135,44 @@ h2 {
   padding: 50px 0;
 }
 
-svg {
+#choropleth-map svg,
+#choropleth-legend svg,
+#time-slider svg,
+#parallel-coords svg,
+#regional-bars svg,
+#regional-map svg {
   font: 10px sans-serif;
 }
 
-.background path {
+#parallel-coords .background path {
   fill: none;
   stroke: #ddd;
   shape-rendering: crispEdges;
 }
 
-.foreground path {
+#parallel-coords .foreground path {
   fill: none;
   stroke: steelblue;
   stroke-width: 3px;
 }
 
-.foreground path.west {
+#parallel-coords .foreground path.west {
   stroke: rgb(177, 48, 255);
 }
 
-.foreground path.southwest {
+#parallel-coords .foreground path.southwest {
   stroke: yellow;
 }
 
-.foreground path.midwest {
+#parallel-coords .foreground path.midwest {
   stroke: rgb(89, 231, 250);
 }
 
-.foreground path.southeast {
+#parallel-coords .foreground path.southeast {
   stroke: rgb(26, 244, 41);
 }
 
-.foreground path.northeast {
+#parallel-coords .foreground path.northeast {
   stroke: rgb(250, 60, 60);
 }
 
@@ -203,33 +213,33 @@ svg {
   min-width: 300px;
 }
 
-.axis line,
-.axis path {
-  fill: none;
-  stroke: #000;
-  shape-rendering: crispEdges;
-}
-
-.axis text {
-  text-shadow: 0 1px 0 #fff, 1px 0 0 #fff, 0 -1px 0 #fff, -1px 0 0 #fff;
-  cursor: move;
-}
-
 /* Choropleth Map Styles*/
-.state {
+#choropleth-map .state,
+#regional-map .state {
   stroke: rgb(0, 0, 0);
   stroke-linejoin: round;
 }
 
-.q0-9 { fill:rgb(247,251,255); }
-.q1-9 { fill:rgb(222,235,247); }
-.q2-9 { fill:rgb(198,219,239); }
-.q3-9 { fill:rgb(158,202,225); }
-.q4-9 { fill:rgb(107,174,214); }
-.q5-9 { fill:rgb(66,146,198); }
-.q6-9 { fill:rgb(33,113,181); }
-.q7-9 { fill:rgb(8,81,156); }
-.q8-9 { fill:rgb(8,48,107); }
+/* Old Colors */
+/*#choropleth-map .q0-9, #choropleth-legend .q0-9 { fill:rgb(247,251,255); }
+#choropleth-map .q1-9, #choropleth-legend .q1-9 { fill:rgb(222,235,247); }
+#choropleth-map .q2-9, #choropleth-legend .q2-9 { fill:rgb(198,219,239); }
+#choropleth-map .q3-9, #choropleth-legend .q3-9 { fill:rgb(158,202,225); }
+#choropleth-map .q4-9, #choropleth-legend .q4-9 { fill:rgb(107,174,214); }
+#choropleth-map .q5-9, #choropleth-legend .q5-9 { fill:rgb(66,146,198); }
+#choropleth-map .q6-9, #choropleth-legend .q6-9 { fill:rgb(33,113,181); }
+#choropleth-map .q7-9, #choropleth-legend .q7-9 { fill:rgb(8,81,156); }
+#choropleth-map .q8-9, #choropleth-legend .q8-9 { fill:rgb(8,48,107); }*/
+
+#choropleth-map .q0-9, #choropleth-legend .q0-9 { fill:rgb(255,255,204); }
+#choropleth-map .q1-9, #choropleth-legend .q1-9 { fill:rgb(255,237,160); }
+#choropleth-map .q2-9, #choropleth-legend .q2-9 { fill:rgb(254,217,118); }
+#choropleth-map .q3-9, #choropleth-legend .q3-9 { fill:rgb(254,178,76); }
+#choropleth-map .q4-9, #choropleth-legend .q4-9 { fill:rgb(253,141,60); }
+#choropleth-map .q5-9, #choropleth-legend .q5-9 { fill:rgb(252,78,42); }
+#choropleth-map .q6-9, #choropleth-legend .q6-9 { fill:rgb(227,26,28); }
+#choropleth-map .q7-9, #choropleth-legend .q7-9 { fill:rgb(189,0,38); }
+#choropleth-map .q8-9, #choropleth-legend .q8-9 { fill:rgb(128,0,38); }
 
 #map-table-state {
   font-weight: bold;
