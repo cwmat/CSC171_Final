@@ -254,14 +254,28 @@ h2 {
   font-size: 1em;
 }
 
-/* Max CSS */
-.line {
-    fill: none;
-    stroke: #1C9A3D;
-    stroke-width: 1.5px;
-    opacity: 0.05;
+
+th {
+  font-size: 0.75em;
 }
 
+
+
+/* Max CSS */
+/****** TYPOGRAPHY ******/
+
+p, a, li, span, button, h1, h2, h3, h4, h5, h6, label {
+    font-family: 'PT Serif', Garamond, Georgia, 'Times New Roman', serif;
+}
+
+.callout {
+    font-weight: 700;
+    font-size: 1.25em;
+
+}
+
+
+/****** [/TYPOGRAPHY] ****/
 #projected-capacity, #caiso {
     margin-right: 0;
     float: left;
@@ -271,11 +285,80 @@ h2 {
     float: right;
 }
 
+#caiso-controls ul {
+    list-style-type: none;
+    margin-left: 0;
+    padding-left: 0;
+}
+
+#caiso-controls ul li {
+    margin-left: 0;
+    padding-left: 0;
+}
+
+#caiso-controls h4 {
+    margin-bottom: 15px;
+}
+
+#caiso-controls form {
+    margin-top: 5px;
+}
+
+/* Overrides default Bootstrap color scheme */
+.btn-primary {
+    background-color: rgb(227, 26, 28);
+    border: none;
+}
+
 /* Overrides default Bootstrap display: inline-block */
 #projected-capacity-controls .form-group {
     display: block;
 }
 
-th {
-  font-size: 0.75em;
+#projected-capacity-description p:first-child {
+    margin-top: 25px;
 }
+
+#projected-capacity-legend {
+    margin-top: 20px;
+}
+
+/*********************/
+/*  TOOLTIP OVERLAY  */
+/*********************/
+
+.tooltip-title {
+    display: block;
+    margin-bottom: 10px;
+    font-weight: 600;
+}
+
+.d3-tip {
+    line-height: 1;
+    padding: 12px;
+    background: rgba(0, 0, 0, 0.8);
+    color: #fff;
+    border-radius: 2px;
+}
+
+/* Creates a small triangle extender for the tooltip */
+.d3-tip:after {
+    box-sizing: border-box;
+    display: inline;
+    font-size: 10px;
+    width: 100%;
+    line-height: 1;
+    color: rgba(0, 0, 0, 0.8);
+    content: "\25BC";
+    position: absolute;
+    text-align: center;
+}
+
+/* Style northward tooltips differently */
+.d3-tip.n:after {
+    margin: -1px 0 0 0;
+    top: 100%;
+    left: 0;
+}
+
+

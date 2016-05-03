@@ -29,6 +29,7 @@ https://commons.wikimedia.org/wiki/Main_Page
   <link rel="stylesheet" href="css/d3.slider.css">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/leaflet/1.0.0-rc.1/leaflet.css" />
   <script src="https://cdn.jsdelivr.net/leaflet/1.0.0-rc.1/leaflet-src.js"></script>
+  <link rel="stylesheet" href="css/pt-serif.css">
   <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
@@ -46,6 +47,7 @@ https://commons.wikimedia.org/wiki/Main_Page
         </button>
         <a class="navbar-brand" href="/#choropleth-map">Choropleth Map</a>
         <a class="navbar-brand" href="/#parallel-coords">Parallel Coordinates</a>
+		<a class="navbar-brand" href="/#caiso">Hourly Output Graph</a>
         <a class="navbar-brand" href="/#projected-capacity">Capacity Plot</a>
       </div>
     </div>
@@ -230,67 +232,111 @@ https://commons.wikimedia.org/wiki/Main_Page
       </div>
     </div>
     <!-- /.row -->
+		<div class="row">
+            <h2>When Does Wind Generate the Most Energy?</h2>
+            <p>
+                Like solar energy, wind energy is highly variable in its availability&mdash;the wind does not always blow just as the sun does not always shine. While it’s easy to expect when solar power’s generative capacity will drop to negligible levels&mdash;namely, during the night&mdash;because we can observe day and night directly, it’s much harder to predict capacity from wind based on casual observation.
+            </p>
+            <p>
+                In order to get an idea of hourly trends in capacity output from wind, this visualization dives into a detailed look at data from California, one of the leading states in the U.S. in wind energy adoption. The plot shows daily output by hour for nearly 6 years (each line represents one day), between April 2010 and April 2016.
 
-		<!-- California ISO Wind Data -->
-	<div class="row">
-		<div id="caiso-brush" class="col-lg-9"></div>
-		<div id="caiso" class="col-lg-9"></div>
-		<div id="caiso-controls" class="col-lg-3">
-			<button class="btn btn-primary">Reset</button>
-			<h4>Filter by hour of day:</h4>
-			<form class="form-inline">
-				<select id="hour1" class="hour-select"></select>
-				<span> to </span>
-				<select id="hour2" class="hour-select"></select>
-			</form>
-		</div>
-	</div>
-	<!-- /.row -->
-	<!-- Vertical Heatmap -->
-	<div class="row">
-		<div id="projected-capacity-description" class="col-lg-3">
-                <p>
-                    Keytar scenester chartreuse, cupidatat whatever kickstarter XOXO waistcoat marfa anim. Fingerstache small batch stumptown magna pickled plaid. Ullamco cornhole meditation, twee food truck cred ramps asymmetrical sartorial farm-to-table gochujang tumblr. Selvage pabst narwhal, hella esse proident pickled paleo banjo four loko PBR&B. Pickled kitsch aliqua, blue bottle photo booth sartorial dreamcatcher accusamus proident nostrud celiac consectetur pinterest chillwave consequat. Disrupt chicharrones sustainable cronut magna forage wolf, synth consequat bitters sunt duis irony sapiente brunch. PBR&B cred pickled aute intelligentsia.
-                </p>
-                <p>
-                    Gluten-free plaid nihil, disrupt messenger bag sint small batch. Salvia cardigan locavore venmo VHS yuccie. Sapiente pabst single-origin coffee butcher. Velit stumptown et commodo, tofu cray mumblecore green juice single-origin coffee sartorial poutine letterpress tilde hella church-key. Scenester cronut qui +1 health goth taxidermy. Godard cupidatat artisan, bushwick tacos est man bun gochujang cred skateboard. Flannel tattooed occaecat veniam, quis viral 3 wolf moon irure gentrify wolf adipisicing fugiat.
-                </p>
-                <p>
-                    Retro commodo cronut, authentic single-origin coffee minim green juice vero mixtape sustainable. Cardigan nihil twee vero, nisi ad voluptate consectetur gastropub cold-pressed cillum. Selfies enim freegan, kale chips next level microdosing celiac occupy nihil fap. Disrupt franzen taxidermy, farm-to-table humblebrag keffiyeh echo park small batch. Reprehenderit iPhone squid eu microdosing art party. Keytar typewriter mixtape, cred photo booth food truck irony venmo cray. Fashion axe 90's portland delectus iPhone cray put a bird on it lo-fi, meggings voluptate.
-                </p>
-                <p>
-                    Readymade bespoke forage, voluptate kogi cray laboris synth hammock pug etsy pinterest art party ut banjo. Echo park pinterest thundercats biodiesel selfies, cold-pressed flannel cornhole before they sold out. Fingerstache bicycle rights venmo godard listicle butcher mollit velit. Cardigan hoodie austin, 3 wolf moon asymmetrical church-key kinfolk food truck fugiat tacos proident ut semiotics. Blog est man braid, authentic trust fund messenger bag cold-pressed accusamus kinfolk shoreditch chambray celiac wolf beard. Chartreuse fingerstache scenester affogato mumblecore, kale chips reprehenderit poutine twee VHS lo-fi dolor. Health goth single-origin coffee proident green juice, tousled intelligentsia cardigan.
-                </p>
+            </p>
+            <h3>Insights</h3>
+            <ol class="callout">
+                <li>Winds blow most strongly at night, and dip significantly during the day.</li>
+                <li>Many days have little to no wind, and thus produce little power from wind.</li>
+            </ol>
         </div>
-		<div id="projected-capacity" class="col-lg-6"></div>
-		<div id="projected-capacity-controls" class="col-lg-3">
-			<div id="projected-capacity-legend"></div>
-			<form class="form-inline">
-				<p>Filter by:</p>
-				<div class="form-group">
+        <div class="row">
+            <div id="caiso-brush" class="col-lg-9"></div>
+            <div class="col-lg-3">
+                <h3>Hourly Output from Wind in California, 2010&ndash;2016</h3>
+            </div>
+            <div id="caiso" class="col-lg-9"></div>
+            <div id="caiso-controls" class="col-lg-3">
+                <h4>Filter by hour of day:
+                    <form class="form-inline">
+                        <select id="hour1" class="hour-select"></select>
+                        <span> to </span>
+                        <select id="hour2" class="hour-select"></select>
+                    </form>
+                </h4>
+                <p>
+                    Hours are on a 24-hour schedule. The time zone is GMT -08:00 (Pacific).
+                    <ul>
+                        <li>8 &mdash; 8 am</li>
+                        <li>12 &mdash; noon</li>
+                        <li>16 &mdash; 4 pm</li>
+                        <li>20 &mdash; 8 pm</li>
+                    </ul>
+                </p>
 
-					<input type="checkbox" id="year2012" class="capacity-checkbox" value="2012" checked>
-					<label for="year2012">2012</label>
-					</div>
-					<div class="form-group">
-					<input type="checkbox" id="year2014" class="capacity-checkbox" value="2014" checked>
-					<label for="year2014">2014</label></div>
-					<div class="form-group">
-					<input type="checkbox" id="year2018" class="capacity-checkbox" value="2018" checked>
-					<label for="year2018">2018</label>
-					</div>
-					<div class="form-group">
-					<input type="checkbox" id="year2024" class="capacity-checkbox" value="2024" checked>
-					<label for="year2024">2024</label>
-					</div>
-					<div class="form-group">
-					<input type="checkbox" id="year2030" class="capacity-checkbox" value="2030" checked>
-					<label for="year2030">2030</label>
-				</div>
-			</form>
-		</div>
-	</div>
-	<!-- /.row -->
+                <div id="caiso-legend"></div>
+                <p>
+                    Source: California Independent System Operator (CAISO)<br>
+                    <i class="fa fa-link"></i> <a href="http://www.caiso.com/Pages/default.aspx" target="_blank">www.caiso.com/Pages/default.aspx</a>
+                </p>
+                <button id="caiso-reset" class="btn btn-primary">Reset</button>
+            </div>
+        </div>
+        <div class="row">
+            <h2>Projected Wind Capacity By State Through 2030</h2>
+        </div>
+        <div class="row">
+            <div id="projected-capacity-description" class="col-lg-3">
+                <p>
+                    In 2008, the National Renewable Energy Laboratory (NREL) published a report outlining a plan for the United States to generate 20% of its energy from wind by 2030. In order to achieve this target, NREL projects the generative capacity from wind needed by each state, in 6-year intervals starting in 2012.
+                </p>
+                <p>
+                    This visualization classifies states according to the minimum target in each category set by NREL for a given state in a given year.
+                </p>
+                <p class="callout">
+                    Is the U.S. on track to achieve 20% by 2030?
+                </p>
+                <p>
+                    Based on actual output data from 2014, <a href="#" id="on-track">half the country&mdash;25 states&mdash;</a>had already met or exceeded their 2018 target projected wind capacity.
+                </p>
+                <p>
+                    Just one state, Nebraska, needs to add 1,000MW or more of wind power capacity in order to meet NREL’s 2018 target projected wind capacity. 5 states (North Carolina, New Jersey, Nebraska, South Dakota, and Wyoming) need to add 1,000MW or more of wind capacity by 2024 in order to meet NREL’s targets.
+                </p>
+                <p>
+                    Three states, Alabama, Louisiana, and Mississippi, generate zero or negligible ( < 100 MW) power from wind under the NREL 20% by 2030 Scenario.
+                </p>
+            </div>
+            <div id="projected-capacity" class="col-lg-6"></div>
+            <div id="projected-capacity-controls" class="col-lg-3">
+                <div id="projected-capacity-legend"></div>
+                <p>
+                    Source: National Renewable Energy Laboratory<br>
+                    <i class="fa fa-link"></i> <a href="http://www.nrel.gov/docs/fy08osti/41869.pdf" target="_blank">www.nrel.gov</a>
+                </p>
+                <form class="form-inline">
+                    <h4>Filter by year(s):</h4>
+                    <div class="form-group">
+
+                        <input type="checkbox" id="year2012" class="capacity-checkbox" value="2012" checked>
+                        <label for="year2012">2012 (Projected Capacity)</label>
+                        </div>
+                        <div class="form-group">
+                        <input type="checkbox" id="year2014" class="capacity-checkbox" value="2014" checked>
+                        <label for="year2014">2014 (Actual Capacity)</label></div>
+                        <div class="form-group">
+                        <input type="checkbox" id="year2018" class="capacity-checkbox" value="2018" checked>
+                        <label for="year2018">2018 (Projected Capacity)</label>
+                        </div>
+                        <div class="form-group">
+                        <input type="checkbox" id="year2024" class="capacity-checkbox" value="2024" checked>
+                        <label for="year2024">2024 (Projected Capacity)</label>
+                        </div>
+                        <div class="form-group">
+                        <input type="checkbox" id="year2030" class="capacity-checkbox" value="2030" checked>
+                        <label for="year2030">2030 (Projected Capacity)</label>
+                    </div>
+                </form>
+
+            </div>
+        </div>
+	
   </div>
   <!-- End container -->
 
@@ -324,6 +370,7 @@ https://commons.wikimedia.org/wiki/Main_Page
   <script src="js/colorbrewer.js"></script>
   <script src="js/caiso.js"></script>
   <script src="js/caiso-brush.js"></script>
+  <script src="js/caiso-legend.js"></script>
   <script src="js/CapacityPlot.js"></script>
   <script src="js/capacity-legend.js"></script>
   <script src="js/max-main.js"></script>
