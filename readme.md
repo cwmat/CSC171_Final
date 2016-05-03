@@ -6,6 +6,15 @@
 ####Charles Mateer
 ####Max DeCurtins
 
+## Screen Cast
+https://www.youtube.com/watch?v=r_5PNPrauyo&feature=youtu.be
+
+## Project Plan and Process Book
+https://docs.google.com/document/d/1kHICIMvkXZ3fVqiphRKspV8D2Ubtl5ZH3fxHVwEuoQM/edit?usp=sharing
+
+## Project Poster
+https://drive.google.com/a/harvard.edu/file/d/0B2p40JTTf-UaN216SlZIRzRWSE0/view?usp=sharing
+
 ## Introduction
 Wind power captures the natural wind in our atmosphere and converts it into mechanical energy and ultimately electricity. Wind energy has been around since recorded history, starting with use in sail boats as early as 5,000 B.C. and wind mills for grinding grain in the 1800s.  It wasn’t until 1890 that wind energy began being experimented with as a means to produce electricity and not until 1970 that commercial wind energy was explored as a viable option.   The combination of increasing prices for fossil fuels and  the rise of environmental movements and subsequently federal environmental policies (Clean Air Act, Clean Water Act, National Environmental Policy Act) sparked an interest in renewable energy.  That is to say, energy that is sustainable and has limited negative effects on the natural environment.  Today, wind energy is a rapidly growing industry, largely due to federal policy and the need to find renewable sources of energy to supplement fossil fuels in an environment of ever growing population.  The following visualizations show past, current, and projected trends for wind energy in the United States.
 
