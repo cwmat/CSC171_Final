@@ -14,8 +14,6 @@ CapacityPlot = function(_parentElement, _data) {
     this.parentElement = _parentElement;
     this.data = this.formatData(_data);
 
-    console.log(this.data);
-
     var m = d3.map(this.data, function(d) { return d.key; });
 
     this.allYears = m.keys();
@@ -376,17 +374,10 @@ CapacityPlot.prototype.onHover = function(d, i) {
     var index = (typeof i === 'undefined') ? d.index : i;
 
     var selection = '#' + vis.parentElement + ' circle';
-    d3.selectAll(selection + '.index-' + index)
-        .style({
-            stroke: 'blue',
-            'stroke-width': '2px'
-        });
 
-    d3.select('text.index-' + index)
-        .style({
-            fill: 'blue',
-            'font-weight': 'bold'
-        });
+    vis.strokeBlue(d3.selectAll(selection + '.index-' + index));
+    vis.textHover(d3.select('text.index-' + index));
+
 };
 
 CapacityPlot.prototype.onHoverMultiple = function(states) {
@@ -422,17 +413,9 @@ CapacityPlot.prototype.onLeave = function(d, i) {
     var index = (typeof i === 'undefined') ? d.index : i;
 
     var selection = '#' + vis.parentElement + ' circle';
-    d3.selectAll(selection + '.index-' + index)
-        .style({
-            stroke: 'none',
-            'stroke-width': '0px'
-        });
 
-    d3.select('text.index-' + index)
-        .style({
-            fill: 'black',
-            'font-weight': 'normal'
-        });
+    vis.strokeNone(d3.selectAll(selection + '.index-' + index));
+    vis.textNormal(d3.select('text.index-' + index));
 
 };
 
