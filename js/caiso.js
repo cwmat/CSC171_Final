@@ -70,7 +70,9 @@ Caiso.prototype.initVis = function() {
         .attr({
             x: vis.width / 2,
             dy: 30
-        }).text('Hour of Day');
+        })
+        .style('font-weight', 'bold')
+        .text('Hour of Day');
 
     vis.yLabel = vis.yAxisGroup.append('text')
         .attr({
@@ -78,6 +80,7 @@ Caiso.prototype.initVis = function() {
             y: vis.margin.top
         })
         .style('text-anchor', 'end')
+        .style('font-weight', 'bold')
         .text('Megawatts (MW)');
 
     // Initialize a line function for drawing paths.
@@ -346,6 +349,16 @@ Caiso.prototype.filterByDates = function(data, date1, date2) {
 
         return (current >= date1.valueOf()) && (current <= date2.valueOf());
     });
+
+    /*
+    Not the most elegant thing, but in order to reset the x scale when the date range is changed after
+    being also filtered by hours, filter the newly-brushed selection again by hours.
+     */
+    $(document).ready(function() {
+        var hour1 = parseInt($('#hour1').val()), hour2 = parseInt($('#hour2').val());
+        vis.filterByHours(hour1, hour2);
+    });
+
 
     vis.updateVis();
 };
