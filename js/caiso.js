@@ -87,7 +87,8 @@ Caiso.prototype.initVis = function() {
     vis.tip = d3.tip().attr('class', 'd3-tip').offset([10, 30]);
 
     // Initialize a color palette.
-    vis.color = d3.scale.quantize().domain([2010, 2016]).range(colorbrewer.YlOrRd[6]);
+    var inputValues = [2010, 2011, 2012, 2013, 2014, 2015, 2017];
+    vis.color = d3.scale.threshold().domain(inputValues).range(colorbrewer.YlOrRd[6]);
 
     vis.updateVis();
 };
@@ -150,8 +151,6 @@ Caiso.prototype.updateVis = function() {
     var dataToUse = (typeof vis.filteredData === 'undefined') ? vis.formattedData : vis.filteredData;
 
     var hourRange = vis.getHourRange(dataToUse);
-
-    //console.log(hourRange);
 
     // Set the x and y domains.
     vis.x.domain(d3.extent(hourRange, function(d) {
