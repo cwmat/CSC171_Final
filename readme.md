@@ -24,5 +24,11 @@ The following visualization utilizes wind turbine data from the United States Ge
 ## Parallel Coordinates
 The American Wind Energy Association advocates for the increase of wind energy in the United States and in doing so collects a large amount of metrics on wind energy development per state.  The following visualization shows wind energy statistics for U.S. states in 2014.  Statistics include such areas as total wind energy capacity per state, jobs provided by the wind energy sector, wind energy facilities in each state, water saved by developing wind energy (instead of other water intensive energy sources like natural gas), and green-house gas emissions avoided by using a clean renewable source.  The following diagram has states broken into regions by color: west, mid-west, southwest, northeast, and southeast.  Each line on the graph represents a state and shows their various wind energy statistics.  Try clicking and dragging on an axis to filter the dataset!
 
+## Multi-series Path Chart
+This visualization shows hourly output in MW from wind in California for nearly every day between April 2010 and April 2016. The data was scraped from the California Independent System Operator (CAISO) website using PHP and cURL. There are 2,172 paths in this chart, with each path representing one day's worth of hourly data. The paths are colored according to year and are at 5% opacity to reduce visual clutter and help make larger trends more visible. The paths use basis interpolation.
+
+## Vertical Scatter Plot/Heatmap
+This visualization shows wind generation capacities for each state as projected by the National Renewable Energy Laboratory (NREL) through 2030. The data was compiled from a PDF report by NREL based on projections originally modeled as choropleth maps. Modeling the data as a series of columns allows for much easier comparison between projections for different years. The actual data for 2014 is pulled from the same dataset that is used in this project's Choropleth Map. Capacity ranges for each state were input according to their minimum values, e.g. a state projected to have 1,000 - 5,000 MW of capacity in a given year is entered as 1000 in the dataset for that year.
+
 Live Link:
 http://cwmat.github.io/CSC171_Final
