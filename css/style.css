@@ -1,7 +1,7 @@
 body {
-  font-family: 'Roboto', sans-serif;
+  /*font-family: 'Roboto', sans-serif;*/
   background-color: #f7f7f7;
-  text-align: center;
+  /*text-align: center;*/
 }
 
 h1 {
@@ -84,32 +84,32 @@ h2 {
 
 .orange-text {
   color: orange;
-  font-weight: bold;;
+  font-weight: bold;
 }
 
 .purple-text {
   color: purple;
-  font-weight: bold;;
+  font-weight: bold;
 }
 
 .teal-text {
   color: rgb(9, 241, 249);
-  font-weight: bold;;
+  font-weight: bold;
 }
 
 .yellow-text {
   color: yellow;
-  font-weight: bold;;
+  font-weight: bold;
 }
 
 .green-text {
   color: rgb(114, 235, 18);
-  font-weight: bold;;
+  font-weight: bold;
 }
 
 .red-text {
   color: red;
-  font-weight: bold;;
+  font-weight: bold;
 }
 
 
@@ -276,6 +276,18 @@ p, a, li, span, button, h1, h2, h3, h4, h5, h6, label {
 
 
 /****** [/TYPOGRAPHY] ****/
+#caiso .axis text, #projected-capacity .axis text {
+    font-size: 11px;
+}
+
+#caiso .line, #projected-capacity .line {
+    fill: none;
+    /*stroke: #1C9A3D;*/
+    stroke-width: 2px;
+    opacity: 0.05;
+}
+
+
 #projected-capacity, #caiso {
     margin-right: 0;
     float: left;
