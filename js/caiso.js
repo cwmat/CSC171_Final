@@ -87,7 +87,7 @@ Caiso.prototype.initVis = function() {
     vis.tip = d3.tip().attr('class', 'd3-tip').offset([10, 30]);
 
     // Initialize a color palette.
-    var inputValues = [2010, 2011, 2012, 2013, 2014, 2015, 2017];
+    var inputValues = [2010, 2011, 2012, 2013, 2014, 2015, 2016];
     vis.color = d3.scale.threshold().domain(inputValues).range(colorbrewer.YlOrRd[6]);
 
     vis.updateVis();
