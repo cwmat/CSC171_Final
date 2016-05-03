@@ -3,19 +3,18 @@
  */
 
 /**
- * Instantiate a new legend. Since it is tailored specifically to the projected capacity by state plot,
- * and the color palette's domain and range do not change, the legend does not receive data from an
- * instance of the projected capacity plot.
+ * Instantiate a new legend for the Caiso visualization.
  *
  * @param _parentElement    The element in which this legend will reside.
- * @param _color    A color function, using a scale, domain, and range.
  * @constructor
  */
-Legend = function(_parentElement, _color) {
+CaisoLegend = function(_parentElement) {
 
     this.parentElement = _parentElement;
 
-    this.color = _color;
+    this.color = d3.scale.quantize().domain([2010, 2016]).range(colorbrewer.YlOrRd[7]);
+
+    this.nsPrefix = 'caiso-';
 
     this.init();
 };
@@ -24,7 +23,7 @@ Legend = function(_parentElement, _color) {
 /**
  * Initialize this legend.
  */
-Legend.prototype.init = function() {
+CaisoLegend.prototype.init = function() {
 
     var legend = this;
 
@@ -38,7 +37,7 @@ Legend.prototype.init = function() {
     };
 
     legend.width = 250 - legend.margin.left - legend.margin.right;
-    legend.height = 200 - legend.margin.top - legend.margin.bottom;
+    legend.height = 220 - legend.margin.top - legend.margin.bottom;
 
     legend.svg = d3.select('#' + legend.parentElement)
         .append('svg')
@@ -49,7 +48,7 @@ Legend.prototype.init = function() {
         .append('g')
         .attr('transform', 'translate(' + legend.margin.left + ',' + legend.margin.top + ')');
 
-    legend.legend = legend.svg.append('g').attr('id', 'heatmap-legend');
+    legend.legend = legend.svg.append('g').attr('id', legend.nsPrefix + 'heatmap-legend');
 
     /*legend.legend.attr({
         transform: 'translate(' + (legend.chartWidth - 200) + ', 0)'
@@ -58,15 +57,15 @@ Legend.prototype.init = function() {
     legend.title = legend.legend.append('text')
         .attr('class', 'legend-title')
         .style('font-weight', 'bold')
-        .text('Capacity in MW');
+        .text('Legend');
 
     legend.items = legend.legend.append('g')
         .attr({
-            class: 'legend-items',
+            class: legend.nsPrefix + 'legend-items',
             transform: 'translate(' + boxmargin + ', ' + 2 * boxmargin + ')'
         });
 
-    legend.items.selectAll('rect')
+    legend.items.selectAll(legend.nsPrefix + 'rect')
         .data(legend.color.range())
         .enter()
         .append('rect')
@@ -77,7 +76,7 @@ Legend.prototype.init = function() {
             },
             width: keywidth,
             height: keyheight,
-            class: 'legend-rects'
+            class: legend.nsPrefix + 'legend-rects'
         })
         .style({
             fill: function(d) {
@@ -85,7 +84,7 @@ Legend.prototype.init = function() {
             }
         });
 
-    legend.items.selectAll('text')
+    legend.items.selectAll(legend.nsPrefix + 'text')
         .data(legend.color.range())
         .enter()
         .append('text')
@@ -97,44 +96,33 @@ Legend.prototype.init = function() {
             dy: '1em'
         })
         .text(function(d) {
-            switch (colorbrewer.YlOrRd[5].indexOf(d)) {
+            switch (colorbrewer.YlOrRd[7].indexOf(d)) {
                 case 0:
-                    return '< 100';
+                    return '2010';
                     break;
                 case 1:
-                    return '100 - 1,000';
+                    return '2011';
                     break;
                 case 2:
-                    return '1,000 - 5,000';
+                    return '2012';
                     break;
                 case 3:
-                    return '5,000 - 10,000';
+                    return '2013';
                     break;
                 case 4:
-                    return '10,000+';
+                    return '2014';
+                    break;
+                case 5:
+                    return '2015';
+                    break;
+                case 6:
+                    return '2016';
                     break;
                 case -1:
-                    return '0 or No Data';
+                    return 'No Data';
                     break;
             }
         });
 
-    legend.items.append('rect')
-        .attr({
-            dx: 0,
-            y: colorbrewer.YlOrRd[5].length * lineheight,
-            width: keywidth,
-            height: keyheight
-        })
-        .style({
-            fill: '#ccc'
-        });
 
-    legend.items.append('text')
-        .attr({
-            x: keywidth + boxmargin,
-            y: colorbrewer.YlOrRd[5].length * lineheight,
-            dy: '1em'
-        })
-        .text('0 or No Data');
 };

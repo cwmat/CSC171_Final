@@ -86,6 +86,9 @@ Caiso.prototype.initVis = function() {
     // Initialize a tooltip.
     vis.tip = d3.tip().attr('class', 'd3-tip').offset([10, 30]);
 
+    // Initialize a color palette.
+    vis.color = d3.scale.quantize().domain([2010, 2016]).range(colorbrewer.YlOrRd[6]);
+
     vis.updateVis();
 };
 
@@ -105,39 +108,34 @@ Caiso.prototype.wrangleData = function() {
      */
     vis.allHours = [];
 
-    vis.valuesByHours = [];
-
     vis.data.forEach(function(d) {
-        d3.values(d.hours).forEach(function(val) {
-            vis.allHours.push(val);
-
-        });
-
-        for(key in d.hours) {
-            vis.allData.push({
-                hour: +key,
-                output: d.hours[key],
-                date: d.date
+        if(d.hasOwnProperty('hours')) {
+            d3.values(d.hours).forEach(function(val) {
+                vis.allHours.push(val);
             });
 
-        }
+            for(key in d.hours) {
+                vis.allData.push({
+                    hour: +key,
+                    output: d.hours[key],
+                    date: d.date
+                });
 
+            }
+        }
     });
+
 
     vis.formattedData = d3.nest().key(function(d) {
         return formatDate.parse(d.date);
     }).entries(vis.allData);
 
-    var dateMap = d3.map(vis.formattedData, function(d) {
-        return d.key;
-    });
-
-    var allDates = dateMap.keys();
-
     vis.hourKeys = d3.keys(vis.data[0].hours);
     vis.hourKeys = vis.hourKeys.map(function(key) {
         return parseInt(key);
     });
+
+
 
 };
 
@@ -205,6 +203,12 @@ Caiso.prototype.updateVis = function() {
             } else {
                 return '2px';
             }
+        })
+        .style('stroke', function(d) {
+
+            var year = new Date(d.key).getFullYear();
+
+            return vis.color(year);
         });
 
     vis.lines.exit().remove();
@@ -250,6 +254,7 @@ Caiso.prototype.attachEventListeners = function() {
                 }
             });
         });
+
     });
 
 };
@@ -337,13 +342,12 @@ Caiso.prototype.filterByHours = function(input1, input2) {
 Caiso.prototype.filterByDates = function(data, date1, date2) {
     var vis = this;
 
-    var filtered = data.filter(function(d) {
+    vis.filteredData = data.filter(function(d) {
         var current = new Date(d.key).valueOf();
 
         return (current >= date1.valueOf()) && (current <= date2.valueOf());
     });
 
-    vis.filteredData = filtered;
     vis.updateVis();
 };
 
@@ -356,9 +360,7 @@ Caiso.prototype.filterByDates = function(data, date1, date2) {
  */
 Caiso.prototype.getHourRange = function(data) {
 
-    var vis = this;
-
-    if(typeof data === 'undefined' || data.length == 0 || !Array.isArray(data)) return;
+    if(typeof data === 'undefined' || data.length == 0 || !Array.isArray(data)) return null;
 
     var m = d3.map(data[0].values, function(d) {
         return d.hour;
@@ -366,9 +368,7 @@ Caiso.prototype.getHourRange = function(data) {
 
     var keys = m.keys();
 
-    var hours = keys.map(function(k) { return parseInt(k); });
-
-    return hours;
+    return keys.map(function(k) { return parseInt(k); });
 };
 
 

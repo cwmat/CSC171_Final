@@ -32,9 +32,12 @@ CapacityPlot = function(_parentElement, _data) {
  */
 CapacityPlot.prototype.formatData = function(data) {
 
+    var vis = this;
+
     var entries = [];
     var pattern = /\d{4}/;
 
+    var onTrack = d3.set();
     for(var i = 0; i < data.length; i++) {
         var current = data[i];
         for(var prop in current) {
@@ -48,7 +51,14 @@ CapacityPlot.prototype.formatData = function(data) {
                 });
             }
         }
+        if(current.mw_wind_2014 > current.wind_cap_2018) {
+            if(!onTrack.has(current.state)) {
+                onTrack.add(current.state);
+            }
+        }
     }
+
+    vis.onTrack = onTrack.values();
 
     return d3.nest().key(function(d) { return d.year; }).entries(entries);
 
@@ -66,8 +76,9 @@ CapacityPlot.prototype.initVis = function() {
     vis.appendSVG();
 
     // Initialize the color scale.
-    vis.color = d3.scale.quantize().domain([100, 10000]).range(colorbrewer.YlOrRd[5]);
-
+    var inputVals = [100, 1000, 5000, 10000];
+    vis.color = d3.scale.quantile().domain(inputVals).range(colorbrewer.YlOrRd[5]);
+    console.log(vis.color.quantiles());
     // Initialize a tooltip.
     vis.tip = d3.tip().attr('class', 'd3-tip').offset([-10, 0]);
 
@@ -116,7 +127,9 @@ CapacityPlot.prototype.updateVis = function() {
 
     circles.enter().append('circle')
         .attr({
-            class: 'circle',
+            class: function(d) {
+                return 'circle state-' + d.state + ' index-' + d.index;
+            },
             cx: function(d, i, j) {
                 //console.log(d);
                 return (1.5 * j) + 30;
@@ -139,9 +152,16 @@ CapacityPlot.prototype.updateVis = function() {
     // Handle the tooltip.
     vis.makeTooltip();
 
+    // Circle hover effects.
     circles.on({
-        mouseover: vis.tip.show,
-        mouseleave: vis.tip.hide
+        mouseover: function(d) {
+            vis.onHover(d);
+            vis.tip.show(d);
+        },
+        mouseleave: function(d) {
+            vis.onLeave(d);
+            vis.tip.hide(d);
+        }
     });
 
     var stateLabels = vis.svg.selectAll('.state-label').data(vis.getStates());
@@ -149,7 +169,9 @@ CapacityPlot.prototype.updateVis = function() {
     stateLabels.enter()
         .append('text')
         .attr({
-            class: 'state-label',
+            class: function(d, i) {
+                return 'state-label state-' + d + ' index-' + i;
+            },
             x: 0,
             y: function(d, i) {
                 return vis.margin.top + (i * 20) + 5;
@@ -158,6 +180,16 @@ CapacityPlot.prototype.updateVis = function() {
         .text(function(d) {
             return mapState(d);
         });
+
+    stateLabels.on({
+        mouseover: function(d, i) {
+            d3.select(this).style('cursor', 'pointer');
+            vis.onHover(d, i);
+        },
+        mouseleave: function(d, i) {
+            vis.onLeave(d, i);
+        }
+    });
 
     /******************************************
      * Enter, update, exit on the column labels.
@@ -226,22 +258,19 @@ CapacityPlot.prototype.attachEventListeners = function() {
 
     var vis = this;
 
-    d3.selectAll('.state-label').on({
-        mouseover: function() {
-            d3.select(this).style({
-                'cursor': 'pointer',
-                'font-weight': 'bold'
-            });
-        },
-        mouseleave: function() {
-            d3.select(this).style('font-weight', 'normal');
-        }
-    });
-
     $(document).ready(function() {
 
         $('.capacity-checkbox').on('change', function() {
             vis.filterData();
+        });
+
+        $('#on-track').on({
+            mouseover: function() {
+                vis.onHoverMultiple(vis.onTrack);
+            },
+            mouseleave: function() {
+                vis.onLeaveMultiple(vis.onTrack);
+            }
         });
     });
 };
@@ -277,6 +306,19 @@ CapacityPlot.prototype.filterData = function() {
 
 
 /**
+ * Returns the color function used by this visualization.
+ *
+ * @returns {*}
+ */
+CapacityPlot.prototype.getColor = function() {
+
+    var vis = this;
+
+    return vis.color;
+};
+
+
+/**
  * Returns an array of state abbreviations pulled from this visualization's data.
  *
  * @returns {Array.<T>|*}
@@ -299,6 +341,8 @@ CapacityPlot.prototype.getStates = function() {
 };
 
 
+
+
 /**
  * Update and call the HTML that will appear in the tooltip.
  */
@@ -309,12 +353,134 @@ CapacityPlot.prototype.makeTooltip = function() {
     // Update and call the tooltip
     vis.tip.html(function(d) {
         var html = '<p class="tooltip-title">' + mapState(d.state) + '</p>';
-        var projected = (+d.year == 2014) ? 'Actual' : 'Projected';
-        html += '<p>' + projected + ' Wind Capacity for ' + d.year + '</p>';
-        html += '<p>Index: ' + d.index + '</p>';
+        var projected = (+d.year == 2014) ? 'Actual' : 'Projected Minimum';
+        html += '<p>' + projected + ' Wind Capacity for ' + d.year + ':</p>';
+        html += '<p>' + Math.round(d.capacity) + ' MW</p>';
 
         return html;
     });
 
     vis.svg.call(vis.tip);
+};
+
+
+/**
+ * Updates styles when a state label or circle is moused over.
+ *
+ * @param d
+ */
+CapacityPlot.prototype.onHover = function(d, i) {
+
+    var vis = this;
+
+    var index = (typeof i === 'undefined') ? d.index : i;
+
+    var selection = '#' + vis.parentElement + ' circle';
+    d3.selectAll(selection + '.index-' + index)
+        .style({
+            stroke: 'blue',
+            'stroke-width': '2px'
+        });
+
+    d3.select('text.index-' + index)
+        .style({
+            fill: 'blue',
+            'font-weight': 'bold'
+        });
+};
+
+CapacityPlot.prototype.onHoverMultiple = function(states) {
+
+    var vis = this;
+
+    var circles = [], labels = [];
+
+    states.forEach(function(s) {
+        circles.push('#' + vis.parentElement + ' circle.state-' + s);
+        labels.push('#' + vis.parentElement + ' text.state-' + s);
+    });
+
+    var circleMultiSelect = circles.join(', ');
+    var labelsMultiSelect = labels.join(', ');
+
+    vis.strokeBlue(d3.selectAll(circleMultiSelect));
+    vis.textHover(d3.selectAll(labelsMultiSelect));
+
+};
+
+
+
+/**
+ * Updates styles when the mouse leaves a state label or circle.
+ *
+ * @param d
+ */
+CapacityPlot.prototype.onLeave = function(d, i) {
+
+    var vis = this;
+
+    var index = (typeof i === 'undefined') ? d.index : i;
+
+    var selection = '#' + vis.parentElement + ' circle';
+    d3.selectAll(selection + '.index-' + index)
+        .style({
+            stroke: 'none',
+            'stroke-width': '0px'
+        });
+
+    d3.select('text.index-' + index)
+        .style({
+            fill: 'black',
+            'font-weight': 'normal'
+        });
+
+};
+
+
+CapacityPlot.prototype.onLeaveMultiple = function(states) {
+
+    var vis = this;
+
+    var circles = [], labels = [];
+
+    states.forEach(function(s) {
+        circles.push('#' + vis.parentElement + ' circle.state-' + s);
+        labels.push('#' + vis.parentElement + ' text.state-' + s);
+    });
+
+    var circleMultiSelect = circles.join(', ');
+    var labelsMultiSelect = labels.join(', ');
+
+    vis.strokeNone(d3.selectAll(circleMultiSelect));
+    vis.textNormal(d3.selectAll(labelsMultiSelect));
+
+};
+
+
+CapacityPlot.prototype.strokeBlue = function(selection) {
+    selection.style({
+        stroke: 'blue',
+        'stroke-width': '2px'
+    });
+};
+
+CapacityPlot.prototype.strokeNone = function(selection) {
+    selection.style({
+        stroke: 'none',
+        'stroke-width': '0px'
+    });
+};
+
+CapacityPlot.prototype.textHover = function(selection) {
+    selection.style({
+        fill: 'blue',
+        'font-weight': 'bold'
+    });
+};
+
+CapacityPlot.prototype.textNormal = function(selection) {
+    selection.style({
+        fill: 'black',
+        'font-weight': 'normal'
+    });
 };

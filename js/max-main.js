@@ -3,7 +3,7 @@
  */
 
 // Variable for CA ISO visualization instance
-var caiso, brush;
+var caiso, brush, caisoLegend;
 
 // Variable for projected capacity plot visualization.
 var capacityPlot, capacityLegend;
@@ -54,6 +54,8 @@ function createCaiso(data) {
     caiso = new Caiso('caiso', data);
     // Instantiate a new brush.
     brush = new CaisoBrush('caiso-brush', caiso.getData(), caiso.getWidth());
+    // Instantiate a new Caiso legend.
+    caisoLegend = new CaisoLegend('caiso-legend');
 }
 
 function brushed() {
@@ -84,7 +86,7 @@ function createCapacityPlot(data) {
     // Create a new projected capacity plot.
     capacityPlot = new CapacityPlot('projected-capacity', data);
     // Create a new projected capacity plot legend.
-    capacityLegend = new Legend('projected-capacity-legend');
+    capacityLegend = new Legend('projected-capacity-legend', capacityPlot.getColor());
 }
 
 // Some jQuery stuff to power the Caiso viz controls
