@@ -77,8 +77,8 @@ CapacityPlot.prototype.initVis = function() {
 
     // Initialize the color scale.
     var inputVals = [100, 1000, 5000, 10000];
-    vis.color = d3.scale.quantile().domain(inputVals).range(colorbrewer.YlOrRd[5]);
-    console.log(vis.color.quantiles());
+    vis.color = d3.scale.threshold().domain(inputVals).range(colorbrewer.YlOrRd[5]);
+
     // Initialize a tooltip.
     vis.tip = d3.tip().attr('class', 'd3-tip').offset([-10, 0]);
 
